@@ -360,6 +360,11 @@ export function renderPreviewDoc(blocks: Block[], opts?: { edit?: boolean; scrol
   restore();
   document.addEventListener('DOMContentLoaded',restore,{once:true});
   function post(m){parent.postMessage(m,'*');}
+  // 부모(왼쪽 블록 목록)에서 섹션으로 스크롤하라는 요청 받기
+  window.addEventListener('message',function(e){
+    var d=e.data; if(!d||typeof d!=='object'||!d.__promoScrollTo)return;
+    var t=document.getElementById(d.__promoScrollTo); if(t)t.scrollIntoView({behavior:'smooth',block:'start'});
+  });
   // 링크 클릭: 페이지 이동 대신 앵커로 스크롤(내비 탭 미리보기)
   document.addEventListener('click',function(e){
     var a=e.target.closest&&e.target.closest('a'); if(!a)return; e.preventDefault();

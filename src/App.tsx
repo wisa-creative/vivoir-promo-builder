@@ -36,6 +36,13 @@ export function App() {
   const [exporting, setExporting] = useState(false);
   const scrollRef = useRef(0);
   const resizeRef = useRef<{ startX: number; startW: number; dir: number } | null>(null);
+  const iframeRef = useRef<HTMLIFrameElement>(null);
+
+  // 왼쪽 목록에서 블록을 고르면 미리보기도 그 섹션으로 부드럽게 내려가요
+  function selectAndScroll(id: string) {
+    select(id);
+    iframeRef.current?.contentWindow?.postMessage({ __promoScrollTo: id }, "*");
+  }
 
   // 프리뷰 iframe에서 오는 메시지 수신: 인라인 편집 · 스크롤 · 블록선택
   useEffect(() => {
@@ -238,7 +245,7 @@ export function App() {
                   setDragId(null);
                   setOverId(null);
                 }}
-                onClick={() => select(b.id)}
+                onClick={() => selectAndScroll(b.id)}
               >
                 <span className="grip" title="드래그해서 옮기기">⠿</span>
                 <span className="name">{BLOCKS[b.type].label}</span>
@@ -299,6 +306,7 @@ export function App() {
           <div className="preview-stage">
             <div className="preview-frame" style={{ width: pvW, maxWidth: "none" }}>
               <iframe
+                ref={iframeRef}
                 title="preview"
                 srcDoc={doc}
                 style={{ pointerEvents: resizing ? "none" : "auto" }}

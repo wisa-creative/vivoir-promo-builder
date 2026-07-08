@@ -334,8 +334,11 @@ export function renderPageBody(blocks: Block[], opts?: { edit?: boolean }): stri
     .filter((b) => b.enabled !== false)
     .map((b) => renderBlock(b, { edit: opts?.edit, allBlocks: blocks }))
     .join("\n");
+  // 편집(프리뷰) 모드에서는 scroll-behavior:smooth를 넣지 않아요.
+  // 편집할 때마다 iframe이 리로드되며 스크롤을 복원하는데, smooth가 있으면 "위로 갔다 내려오는" 애니메이션이 보여요.
+  const scrollBehavior = opts?.edit ? "" : "html{scroll-behavior:smooth;}";
   return `<div style="font-family:${tokens.font.family};max-width:${tokens.layout.maxWidth}px;margin:0 auto;background:${C.white};color:${C.ink};">
-<style>details>summary{list-style:none;}details>summary::-webkit-details-marker{display:none;}html{scroll-behavior:smooth;}nav::-webkit-scrollbar{display:none;}</style>
+<style>details>summary{list-style:none;}details>summary::-webkit-details-marker{display:none;}${scrollBehavior}nav::-webkit-scrollbar{display:none;}</style>
 ${body}
 </div>`;
 }
@@ -351,7 +354,11 @@ export function renderPreviewDoc(blocks: Block[], opts?: { edit?: boolean; scrol
   const script = edit
     ? `<script>(function(){
   var sy=${sy};
-  window.addEventListener('load',function(){try{window.scrollTo(0,sy);}catch(e){}});
+  // 편집 시 iframe이 리로드돼도 스크롤 위치를 "즉시(애니메이션 없이)·페인트 전"에 복원
+  try{if('scrollRestoration' in history)history.scrollRestoration='manual';}catch(e){}
+  function restore(){try{window.scrollTo({top:sy,left:0,behavior:'instant'});}catch(e){window.scrollTo(0,sy);}}
+  restore();
+  document.addEventListener('DOMContentLoaded',restore,{once:true});
   function post(m){parent.postMessage(m,'*');}
   // 링크 클릭: 페이지 이동 대신 앵커로 스크롤(내비 탭 미리보기)
   document.addEventListener('click',function(e){

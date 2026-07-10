@@ -83,8 +83,15 @@ function imageBox(url: string, label: string, opts: ImgOpts = {}): string {
   if (url && url.trim()) {
     return `<img src="${esc(url)}" alt="${esc(label)}"${drop} style="display:block;width:100%;height:auto;border:0;border-radius:8px;" />`;
   }
+  // 편집 프리뷰: 문구 대신 '이미지 업로드' 아이콘(라인·라운드)만 보여줘요.
+  // 내보내기(export): 기존처럼 라벨 문구 유지.
+  const center = ctx?.edit
+    ? `<div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:${C.inkSub};pointer-events:none;">
+        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M12 16V9"/><path d="M9 12l3-3 3 3"/></svg>
+      </div>`
+    : `<span${labelField ? ea(ctx, labelField) : ""} style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:${C.inkSub};font-weight:500;font-size:15px;white-space:nowrap;">${esc(label)}</span>`;
   return `<div${drop} style="width:100%;padding-top:${ratio};position:relative;background:${C.imgBox};border-radius:8px;">
-    <span${labelField ? ea(ctx, labelField) : ""} style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:${C.inkSub};font-weight:500;font-size:15px;white-space:nowrap;">${esc(label)}</span>
+    ${center}
   </div>`;
 }
 

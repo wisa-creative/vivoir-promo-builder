@@ -31,6 +31,7 @@ export interface CouponData {
   subtitle: string;
   coupons: CouponItem[];
   downloadText: string; // "한 번에 다운받기"
+  downloadLink?: string; // '한 번에 다운받기' 버튼 링크 (쿠폰 전체 받기)
   note: string; // 유의사항 (아코디언)
 }
 // 섹션 구분 헤더 (가운데 큰 제목 + 서브)

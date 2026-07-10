@@ -217,7 +217,7 @@ function renderCoupon(d: CouponData, ctx?: Ctx): string {
       <p${ea(ctx, "subtitle")} style="margin:12px 0 0;font-size:14px;line-height:1.65;color:${C.inkSub};white-space:pre-line;">${esc(d.subtitle)}</p>
     </div>
     <div style="display:flex;flex-direction:column;gap:10px;margin-top:22px;">${rows}</div>
-    ${ctaButton(d.downloadText, "#", "outline", ctx)}
+    ${ctaButton(d.downloadText, d.downloadLink || "#", "outline", ctx)}
     <details style="margin-top:20px;text-align:center;">
       <summary style="cursor:pointer;color:${C.inkSub};font-size:14px;">유의사항 ⌄</summary>
       <div${ea(ctx, "note")} style="margin-top:12px;text-align:left;font-size:13px;line-height:1.7;color:${C.inkSub};white-space:pre-line;min-height:1.7em;">${multiline(d.note)}</div>

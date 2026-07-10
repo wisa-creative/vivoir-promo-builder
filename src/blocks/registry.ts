@@ -71,6 +71,7 @@ export const BLOCKS: Record<BlockType, BlockMeta> = {
       { key: "title", label: "헤드라인", kind: "textarea", placeholder: "역대급 장바구니 쿠폰팩", group: "타이틀 / 문구" },
       { key: "subtitle", label: "서브카피", kind: "textarea", group: "타이틀 / 문구" },
       { key: "downloadText", label: "다운로드 버튼", kind: "text", placeholder: "한 번에 다운받기", group: "다운로드 버튼" },
+      { key: "downloadLink", label: "다운로드 버튼 링크", kind: "text", placeholder: "https://… (쿠폰 전체 받기)", group: "다운로드 버튼" },
       { key: "note", label: "유의사항", kind: "textarea", group: "안내사항" },
     ],
     create: () => ({
@@ -88,6 +89,7 @@ export const BLOCKS: Record<BlockType, BlockMeta> = {
           { amount: "최대 33,000원 할인 쿠폰", condition: "30만원 이상 구매 시", link: "" },
         ],
         downloadText: "한 번에 다운받기",
+        downloadLink: "",
         note: "· 쿠폰 유효기간 내 사용분에 한해 적용됩니다.\n· 일부 상품 및 행사 상품은 쿠폰 적용 대상에서 제외됩니다.",
       },
     }),

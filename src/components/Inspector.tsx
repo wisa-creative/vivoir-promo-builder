@@ -1,4 +1,4 @@
-import { Fragment, useState } from "react";
+import { Fragment, useRef, useState } from "react";
 import { useStore } from "../store";
 import { BLOCKS, type Field } from "../blocks/registry";
 import { Select } from "./Select";
@@ -21,6 +21,76 @@ function readFileAsDataUrl(file: File): Promise<string> {
     r.onerror = reject;
     r.readAsDataURL(file);
   });
+}
+
+// 드래그&드롭 + 버튼 + URL 붙여넣기를 모두 지원하는 이미지 업로더
+function ImageUploader({
+  value,
+  onChange,
+}: {
+  value: string;
+  onChange: (url: string) => void;
+}) {
+  const [over, setOver] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const has = !!value.trim();
+  const isData = value.startsWith("data:");
+  const takeFile = async (files: FileList | null) => {
+    const file = files?.[0];
+    if (file && file.type.startsWith("image/")) onChange(await readFileAsDataUrl(file));
+  };
+  return (
+    <div className="img-up">
+      <div
+        className={"img-drop" + (over ? " over" : "") + (has ? " has" : "")}
+        onClick={() => inputRef.current?.click()}
+        onDragOver={(e) => {
+          e.preventDefault();
+          setOver(true);
+        }}
+        onDragLeave={() => setOver(false)}
+        onDrop={(e) => {
+          e.preventDefault();
+          setOver(false);
+          takeFile(e.dataTransfer.files);
+        }}
+      >
+        {has ? (
+          <img src={value} alt="" />
+        ) : (
+          <span className="img-drop-hint">
+            이미지를 끌어다 놓거나
+            <br />
+            눌러서 올려요
+          </span>
+        )}
+      </div>
+      <div className="img-up-tools">
+        <button className="add-mini" onClick={() => inputRef.current?.click()}>
+          {has ? "이미지 바꾸기" : "이미지 업로드"}
+        </button>
+        {has && (
+          <button className="mini-clear" title="이미지 지우기" onClick={() => onChange("")}>
+            ✕
+          </button>
+        )}
+      </div>
+      <input
+        ref={inputRef}
+        type="file"
+        accept="image/*"
+        hidden
+        onChange={(e) => takeFile(e.target.files)}
+      />
+      <input
+        type="text"
+        className="img-up-url"
+        placeholder={isData ? "업로드한 이미지를 쓰는 중" : "또는 이미지 URL 붙여넣기"}
+        value={isData ? "" : value}
+        onChange={(e) => onChange(e.target.value)}
+      />
+    </div>
+  );
 }
 
 // 접었다 펼치는 설정 묶음
@@ -89,21 +159,7 @@ function FieldRow({ block, f }: { block: Block; f: Field }) {
     return (
       <label className="field">
         <span>{f.label}</span>
-        <input
-          type="text"
-          value={val}
-          placeholder="이미지 URL 또는 파일 업로드"
-          onChange={(e) => update(block.id, { [f.key]: e.target.value })}
-        />
-        <input
-          type="file"
-          accept="image/*"
-          className="file"
-          onChange={async (e) => {
-            const file = e.target.files?.[0];
-            if (file) update(block.id, { [f.key]: await readFileAsDataUrl(file) });
-          }}
-        />
+        <ImageUploader value={val} onChange={(url) => update(block.id, { [f.key]: url })} />
       </label>
     );
   }
@@ -384,20 +440,9 @@ function FreeEditor({ block }: { block: Block }) {
           </div>
           {it.type === "image" ? (
             <>
-              <input
-                type="text"
-                placeholder="이미지 URL 또는 아래에서 업로드"
+              <ImageUploader
                 value={it.imageUrl ?? ""}
-                onChange={(e) => patch(i, { imageUrl: e.target.value })}
-              />
-              <input
-                type="file"
-                accept="image/*"
-                className="file"
-                onChange={async (e) => {
-                  const file = e.target.files?.[0];
-                  if (file) patch(i, { imageUrl: await readFileAsDataUrl(file) });
-                }}
+                onChange={(url) => patch(i, { imageUrl: url })}
               />
               <input
                 type="text"
@@ -506,6 +551,7 @@ function GridEditor({ block }: { block: Block }) {
             />
             <button onClick={() => set(items.filter((_, k) => k !== i))}>✕</button>
           </div>
+          <ImageUploader value={it.imageUrl ?? ""} onChange={(url) => patch(i, { imageUrl: url })} />
           <div className="row">
             <input
               placeholder="할인율 (48%)"

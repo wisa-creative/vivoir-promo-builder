@@ -270,6 +270,19 @@ button { font-family: inherit; cursor: pointer; }
 .grid-link-row { margin-bottom: 0; }
 .grid-link-row input { flex: 1; }
 .grid-link-on { flex: none; font-size: 11px; font-weight: 700; color: var(--txt-blue-primary); background: var(--bg-blue-tertiary, rgba(21,119,204,.1)); border-radius: 999px; padding: 5px 9px; white-space: nowrap; }
+
+/* 이미지 업로더 (드래그&드롭 + 버튼 + URL) */
+.img-up { display: flex; flex-direction: column; gap: 6px; }
+.img-drop { position: relative; border: 1.5px dashed var(--border-secondary); border-radius: 10px; background: var(--bg-primary); min-height: 96px; display: flex; align-items: center; justify-content: center; cursor: pointer; overflow: hidden; transition: border-color .12s, background .12s; }
+.img-drop:hover { border-color: var(--blue-500); }
+.img-drop.over { border-color: var(--blue-500); background: var(--bg-blue-primary); }
+.img-drop.has { border-style: solid; padding: 6px; }
+.img-drop img { display: block; max-width: 100%; max-height: 220px; border-radius: 6px; }
+.img-drop-hint { font-size: 12px; line-height: 1.5; color: var(--txt-tertiary); text-align: center; font-weight: 500; pointer-events: none; }
+.img-up-tools { display: flex; gap: 6px; align-items: center; }
+.img-up-tools .add-mini { flex: 1; padding: 8px; }
+.img-up-tools .mini-clear { height: 36px; }
+.img-up-url { font-size: 12px; }
 .check { font-size: 14px; color: var(--txt-secondary); display: inline-flex; align-items: center; gap: 9px; cursor: pointer; }
 .check input { width: 18px; height: 18px; accent-color: var(--blue-500); }
 .add-mini { width: 100%; border: 1px dashed var(--border-secondary); background: var(--bg-secondary); border-radius: 10px; padding: 10px; font-size: 13px; color: var(--txt-blue-primary); font-weight: 600; }

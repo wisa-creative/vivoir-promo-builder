@@ -152,10 +152,10 @@ export const BLOCKS: Record<BlockType, BlockMeta> = {
   },
   grid: {
     type: "grid",
-    label: "2단 그리드",
+    label: "모듈",
     icon: "▦",
     accent: "#7c3aed",
-    code: "GRID",
+    code: "MODULE",
     fields: [
       { key: "title", label: "섹션 제목", kind: "textarea", placeholder: "함께하면 더 좋은\n소모품 & 악세서리", group: "타이틀" },
       { key: "ctaText", label: "버튼 문구", kind: "text", placeholder: "바로 구매하기", group: "버튼" },

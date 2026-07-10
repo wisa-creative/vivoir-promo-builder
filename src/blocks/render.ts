@@ -401,13 +401,9 @@ export function renderPreviewDoc(blocks: Block[], opts?: { edit?: boolean; scrol
     var sub=el.getAttribute('data-subfield'); if(sub)msg.subfield=sub;
     post(msg);
   },true);
-  // 이미지 드래그&드롭
-  function dropTarget(el){return el&&el.closest&&el.closest('[data-drop-field]');}
-  document.addEventListener('dragover',function(e){var t=dropTarget(e.target); if(!t)return; e.preventDefault(); t.classList.add('promo-drop-over');},true);
-  document.addEventListener('dragleave',function(e){var t=dropTarget(e.target); if(t)t.classList.remove('promo-drop-over');},true);
-  document.addEventListener('drop',function(e){
-    var t=dropTarget(e.target); if(!t)return; e.preventDefault(); t.classList.remove('promo-drop-over');
-    var file=e.dataTransfer&&e.dataTransfer.files&&e.dataTransfer.files[0]; if(!file||!/^image\\//.test(file.type))return;
+  // 이미지 업로드 공용: 대상 박스(t)에 이미지 파일을 읽어 부모로 전송
+  function sendImg(t,file){
+    if(!file||!/^image\\//.test(file.type))return;
     var r=new FileReader();
     r.onload=function(){
       var msg={__promoEdit:true,id:t.getAttribute('data-drop-bid'),field:t.getAttribute('data-drop-field'),value:r.result};
@@ -416,6 +412,21 @@ export function renderPreviewDoc(blocks: Block[], opts?: { edit?: boolean; scrol
       post(msg);
     };
     r.readAsDataURL(file);
+  }
+  // 이미지 드래그&드롭
+  function dropTarget(el){return el&&el.closest&&el.closest('[data-drop-field]');}
+  document.addEventListener('dragover',function(e){var t=dropTarget(e.target); if(!t)return; e.preventDefault(); t.classList.add('promo-drop-over');},true);
+  document.addEventListener('dragleave',function(e){var t=dropTarget(e.target); if(t)t.classList.remove('promo-drop-over');},true);
+  document.addEventListener('drop',function(e){
+    var t=dropTarget(e.target); if(!t)return; e.preventDefault(); t.classList.remove('promo-drop-over');
+    sendImg(t, e.dataTransfer&&e.dataTransfer.files&&e.dataTransfer.files[0]);
+  },true);
+  // 이미지 박스 클릭 → 파일 선택창으로 업로드(교체)
+  document.addEventListener('click',function(e){
+    var t=dropTarget(e.target); if(!t)return; e.preventDefault();
+    var inp=document.createElement('input'); inp.type='file'; inp.accept='image/*';
+    inp.onchange=function(){ sendImg(t, inp.files&&inp.files[0]); };
+    inp.click();
   },true);
   var t2; window.addEventListener('scroll',function(){clearTimeout(t2);t2=setTimeout(function(){post({__promoScroll:window.scrollY||window.pageYOffset||0});},120);});
 })();</script>`

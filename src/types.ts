@@ -23,6 +23,7 @@ export interface NavData {
 export interface CouponItem {
   amount: string; // "최대 3,000원 할인 쿠폰"
   condition: string; // "5만원 이상 구매 시"
+  buttonText?: string; // 받기 버튼 문구 (기본 "쿠폰받기")
   link?: string; // 이 쿠폰의 다운로드 링크 (비우면 '한 번에 다운받기' 버튼만 동작)
 }
 export interface CouponData {

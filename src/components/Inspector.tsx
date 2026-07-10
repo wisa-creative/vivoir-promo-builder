@@ -445,6 +445,11 @@ function CouponEditor({ block }: { block: Block }) {
             value={c.condition}
             onChange={(e) => patch(i, { condition: e.target.value })}
           />
+          <input
+            placeholder="받기 버튼 문구 (기본: 쿠폰받기)"
+            value={c.buttonText ?? ""}
+            onChange={(e) => patch(i, { buttonText: e.target.value })}
+          />
           <div className="row grid-link-row">
             <input
               placeholder="다운로드 링크 붙여넣기 (https://…)"
@@ -462,7 +467,7 @@ function CouponEditor({ block }: { block: Block }) {
       <button
         className="add-mini"
         onClick={() =>
-          set([...coupons, { amount: "최대 O원 할인 쿠폰", condition: "OO원 이상 구매 시", link: "" }])
+          set([...coupons, { amount: "최대 O원 할인 쿠폰", condition: "OO원 이상 구매 시", buttonText: "쿠폰받기", link: "" }])
         }
       >
         + 쿠폰 추가

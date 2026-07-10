@@ -445,12 +445,24 @@ function CouponEditor({ block }: { block: Block }) {
             value={c.condition}
             onChange={(e) => patch(i, { condition: e.target.value })}
           />
+          <div className="row grid-link-row">
+            <input
+              placeholder="다운로드 링크 붙여넣기 (https://…)"
+              value={c.link ?? ""}
+              onChange={(e) => patch(i, { link: e.target.value })}
+            />
+            {(c.link ?? "").trim() && (
+              <span className="grid-link-on" title="이 쿠폰의 '쿠폰받기'가 링크로 연결돼요">
+                연결됨
+              </span>
+            )}
+          </div>
         </div>
       ))}
       <button
         className="add-mini"
         onClick={() =>
-          set([...coupons, { amount: "최대 O원 할인 쿠폰", condition: "OO원 이상 구매 시" }])
+          set([...coupons, { amount: "최대 O원 할인 쿠폰", condition: "OO원 이상 구매 시", link: "" }])
         }
       >
         + 쿠폰 추가

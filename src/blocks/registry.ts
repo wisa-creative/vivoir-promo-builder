@@ -82,10 +82,10 @@ export const BLOCKS: Record<BlockType, BlockMeta> = {
         subtitle:
           "상반기 결산 기간 한정! 최대 33,000원 장바구니 할인 혜택을 놓치지 마세요.",
         coupons: [
-          { amount: "최대 3,000원 할인 쿠폰", condition: "5만원 이상 구매 시" },
-          { amount: "최대 10,000원 할인 쿠폰", condition: "12만원 이상 구매 시" },
-          { amount: "최대 18,000원 할인 쿠폰", condition: "20만원 이상 구매 시" },
-          { amount: "최대 33,000원 할인 쿠폰", condition: "30만원 이상 구매 시" },
+          { amount: "최대 3,000원 할인 쿠폰", condition: "5만원 이상 구매 시", link: "" },
+          { amount: "최대 10,000원 할인 쿠폰", condition: "12만원 이상 구매 시", link: "" },
+          { amount: "최대 18,000원 할인 쿠폰", condition: "20만원 이상 구매 시", link: "" },
+          { amount: "최대 33,000원 할인 쿠폰", condition: "30만원 이상 구매 시", link: "" },
         ],
         downloadText: "한 번에 다운받기",
         note: "· 쿠폰 유효기간 내 사용분에 한해 적용됩니다.\n· 일부 상품 및 행사 상품은 쿠폰 적용 대상에서 제외됩니다.",

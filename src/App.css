@@ -104,7 +104,7 @@ button { font-family: inherit; cursor: pointer; }
 }
 .theme-toggle:hover { background: var(--bg-tertiary); color: var(--txt-primary); }
 
-.workspace { flex: 1; display: grid; grid-template-columns: 260px 1fr 320px; min-height: 0; }
+.workspace { flex: 1; display: grid; grid-template-columns: 260px 1fr 400px; min-height: 0; }
 .panel { background: var(--bg-primary); overflow-y: auto; }
 .panel.left { border-right: 1px solid var(--border-tertiary); padding: 16px; }
 .panel.right { border-left: 1px solid var(--border-tertiary); padding: 16px; }

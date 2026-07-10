@@ -196,16 +196,20 @@ function renderNav(d: NavData, ctx?: Ctx): string {
 
 function renderCoupon(d: CouponData, ctx?: Ctx): string {
   const rows = d.coupons
-    .map(
-      (cp, i) =>
-        `<div style="border:1px solid ${C.line};border-radius:12px;background:${C.white};padding:17px 18px;display:flex;justify-content:space-between;align-items:center;">
+    .map((cp, i) => {
+      const link = (cp.link ?? "").trim();
+      // 개별 다운로드 링크가 있으면 '쿠폰받기'를 그 링크로 연결해요 (미리보기에선 이동 안 함, 내보낸 HTML에서 이동)
+      const getBtn = link
+        ? `<a href="${esc(link)}" style="font-size:13px;color:${C.ink};white-space:nowrap;margin-left:12px;text-decoration:none;font-weight:600;">↓ 쿠폰받기</a>`
+        : `<div style="font-size:13px;color:${C.ink};white-space:nowrap;margin-left:12px;">↓ 쿠폰받기</div>`;
+      return `<div style="border:1px solid ${C.line};border-radius:12px;background:${C.white};padding:17px 18px;display:flex;justify-content:space-between;align-items:center;">
         <div style="min-width:0;">
           <div${ea(ctx, "coupons", { index: i, subfield: "amount" })} style="font-size:15px;font-weight:700;color:${C.ink};">${esc(cp.amount)}</div>
           <div${ea(ctx, "coupons", { index: i, subfield: "condition" })} style="margin-top:6px;font-size:12px;font-weight:600;color:${C.orange};">${esc(cp.condition)}</div>
         </div>
-        <div style="font-size:13px;color:${C.ink};white-space:nowrap;margin-left:12px;">↓ 쿠폰받기</div>
-      </div>`,
-    )
+        ${getBtn}
+      </div>`;
+    })
     .join("");
   const inner = `<div style="text-align:left;">
       ${pill(d.badge, ctx, "badge")}

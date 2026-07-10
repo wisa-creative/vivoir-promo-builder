@@ -267,6 +267,9 @@ button { font-family: inherit; cursor: pointer; }
 .row button { width: 34px; height: 40px; border: 1px solid var(--border-secondary); background: var(--bg-primary); color: var(--txt-secondary); border-radius: 10px; }
 .row button:hover { background: var(--bg-tertiary); color: var(--txt-primary); }
 .card-edit { border: 1px solid var(--border-tertiary); border-radius: 12px; padding: 10px; margin-bottom: 10px; display: flex; flex-direction: column; gap: 6px; background: var(--bg-secondary); }
+.grid-link-row { margin-bottom: 0; }
+.grid-link-row input { flex: 1; }
+.grid-link-on { flex: none; font-size: 11px; font-weight: 700; color: var(--txt-blue-primary); background: var(--bg-blue-tertiary, rgba(21,119,204,.1)); border-radius: 999px; padding: 5px 9px; white-space: nowrap; }
 .check { font-size: 14px; color: var(--txt-secondary); display: inline-flex; align-items: center; gap: 9px; cursor: pointer; }
 .check input { width: 18px; height: 18px; accent-color: var(--blue-500); }
 .add-mini { width: 100%; border: 1px dashed var(--border-secondary); background: var(--bg-secondary); border-radius: 10px; padding: 10px; font-size: 13px; color: var(--txt-blue-primary); font-weight: 600; }

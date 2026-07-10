@@ -56,6 +56,7 @@ export interface GridItem {
   percent: string; // "48%"
   consumerPrice: string; // "89,000"
   salePrice: string; // "54,900"
+  link?: string; // 상품 상세 링크 (붙여넣으면 이 칸이 그 상품으로 연결돼요)
 }
 export interface GridData {
   title: string; // "함께하면 더 좋은\n소모품 & 악세서리"

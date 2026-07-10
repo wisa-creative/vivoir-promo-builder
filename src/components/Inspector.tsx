@@ -494,6 +494,18 @@ function GridEditor({ block }: { block: Block }) {
               onChange={(e) => patch(i, { salePrice: e.target.value })}
             />
           </div>
+          <div className="row grid-link-row">
+            <input
+              placeholder="상품 링크 붙여넣기 (https://…)"
+              value={it.link ?? ""}
+              onChange={(e) => patch(i, { link: e.target.value })}
+            />
+            {(it.link ?? "").trim() && (
+              <span className="grid-link-on" title="이 상품 칸이 링크로 연결돼요">
+                연결됨
+              </span>
+            )}
+          </div>
         </div>
       ))}
       <button
@@ -501,7 +513,7 @@ function GridEditor({ block }: { block: Block }) {
         onClick={() =>
           set([
             ...items,
-            { imageUrl: "", name: "새 상품", percent: "0%", consumerPrice: "0", salePrice: "0" },
+            { imageUrl: "", name: "새 상품", percent: "0%", consumerPrice: "0", salePrice: "0", link: "" },
           ])
         }
       >

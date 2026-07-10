@@ -165,10 +165,10 @@ export const BLOCKS: Record<BlockType, BlockMeta> = {
       data: {
         title: "함께하면 더 좋은\n소모품 & 악세서리",
         items: [
-          { imageUrl: "", name: "전용 소모품 / 악세서리 1", percent: "48%", consumerPrice: "89,000", salePrice: "54,900" },
-          { imageUrl: "", name: "전용 소모품 / 악세서리 2", percent: "48%", consumerPrice: "89,000", salePrice: "54,900" },
-          { imageUrl: "", name: "전용 소모품 / 악세서리 3", percent: "48%", consumerPrice: "89,000", salePrice: "54,900" },
-          { imageUrl: "", name: "전용 소모품 / 악세서리 4", percent: "48%", consumerPrice: "89,000", salePrice: "54,900" },
+          { imageUrl: "", name: "전용 소모품 / 악세서리 1", percent: "48%", consumerPrice: "89,000", salePrice: "54,900", link: "" },
+          { imageUrl: "", name: "전용 소모품 / 악세서리 2", percent: "48%", consumerPrice: "89,000", salePrice: "54,900", link: "" },
+          { imageUrl: "", name: "전용 소모품 / 악세서리 3", percent: "48%", consumerPrice: "89,000", salePrice: "54,900", link: "" },
+          { imageUrl: "", name: "전용 소모품 / 악세서리 4", percent: "48%", consumerPrice: "89,000", salePrice: "54,900", link: "" },
         ],
         ctaText: "바로 구매하기",
         ctaLink: "#",

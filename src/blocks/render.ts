@@ -244,9 +244,14 @@ function renderProduct(d: ProductData, ctx?: Ctx): string {
 
 function renderGrid(d: GridData, ctx?: Ctx): string {
   const cells = d.items
-    .map(
-      (it, idx) =>
-        `<div style="flex:0 0 calc(50% - 6px);max-width:calc(50% - 6px);">
+    .map((it, idx) => {
+      const link = (it.link ?? "").trim();
+      // 링크가 있으면 칸 전체를 <a>로 감싸 그 상품으로 연결해요 (미리보기에선 이동 안 하고, 내보낸 HTML에서 클릭 시 이동)
+      const openTag = link
+        ? `<a href="${esc(link)}" style="display:block;text-decoration:none;color:inherit;flex:0 0 calc(50% - 6px);max-width:calc(50% - 6px);">`
+        : `<div style="flex:0 0 calc(50% - 6px);max-width:calc(50% - 6px);">`;
+      const closeTag = link ? `</a>` : `</div>`;
+      return `${openTag}
         ${imageBox(it.imageUrl, "소모품 이미지", { ratio: "100%", ctx, dropField: "items", dropIndex: idx, dropSubfield: "imageUrl" })}
         <div style="margin-top:10px;font-size:13px;font-weight:600;color:${C.ink};line-height:1.4;">${esc(it.name)}</div>
         <div style="margin-top:5px;">
@@ -254,8 +259,8 @@ function renderGrid(d: GridData, ctx?: Ctx): string {
           <span style="color:${C.muted};font-size:12px;text-decoration:line-through;margin-left:6px;">${esc(it.consumerPrice)}원</span>
         </div>
         <div style="margin-top:2px;font-size:16px;font-weight:800;color:${C.ink};">${esc(it.salePrice)}원</div>
-      </div>`,
-    )
+      ${closeTag}`;
+    })
     .join("");
   const inner = `<h2${ea(ctx, "title")} style="margin:0 0 20px;font-size:22px;font-weight:800;color:${C.ink};line-height:1.3;white-space:pre-line;">${esc(d.title)}</h2>
     <div style="display:flex;flex-wrap:wrap;gap:12px;">${cells}</div>

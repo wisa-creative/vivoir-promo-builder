@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import { useStore } from "../store";
 import { BLOCKS, type Field } from "../blocks/registry";
 import { Select } from "./Select";
@@ -146,6 +146,33 @@ export function Inspector({ block }: { block: Block }) {
 
   const idx = useStore((s) => s.blocks.findIndex((b) => b.id === block.id));
 
+  // 리스트 편집 그룹(쿠폰 카드·그리드 상품·콘텐츠 블록·탭 항목)을 어느 일반 그룹 바로 뒤에 끼울지
+  const listAnchor: Partial<Record<Block["type"], string>> = {
+    coupon: "타이틀 / 문구",
+    grid: "타이틀",
+    free: "타이틀 / 서브 문구",
+  };
+  const listEditor =
+    block.type === "nav" ? (
+      <Group title="탭 항목" defaultOpen>
+        <NavEditor block={block} />
+      </Group>
+    ) : block.type === "coupon" ? (
+      <Group title="쿠폰 카드" meta={`${(block.data as CouponData).coupons.length}개`}>
+        <CouponEditor block={block} />
+      </Group>
+    ) : block.type === "grid" ? (
+      <Group title="그리드 상품" meta={`${(block.data as GridData).items.length}개`}>
+        <GridEditor block={block} />
+      </Group>
+    ) : block.type === "free" ? (
+      <Group title="콘텐츠 블록" meta={`${(block.data as FreeData).items.length}개`} defaultOpen>
+        <FreeEditor block={block} />
+      </Group>
+    ) : null;
+  const anchor = listAnchor[block.type];
+  const anchorExists = anchor != null && groups.some((g) => g.name === anchor);
+
   return (
     <div className="inspector">
       <div className="insp-head" style={{ background: meta.accent }}>
@@ -226,33 +253,18 @@ export function Inspector({ block }: { block: Block }) {
       </Group>
 
       {groups.map((g, i) => (
-        <Group key={g.name} title={g.name} defaultOpen={i === 0}>
-          {g.fields.map((f) => (
-            <FieldRow key={f.key} block={block} f={f} />
-          ))}
-        </Group>
+        <Fragment key={g.name}>
+          <Group title={g.name} defaultOpen={i === 0}>
+            {g.fields.map((f) => (
+              <FieldRow key={f.key} block={block} f={f} />
+            ))}
+          </Group>
+          {anchorExists && g.name === anchor && listEditor}
+        </Fragment>
       ))}
 
-      {block.type === "nav" && (
-        <Group title="탭 항목" defaultOpen>
-          <NavEditor block={block} />
-        </Group>
-      )}
-      {block.type === "coupon" && (
-        <Group title="쿠폰 카드" meta={`${(block.data as CouponData).coupons.length}개`}>
-          <CouponEditor block={block} />
-        </Group>
-      )}
-      {block.type === "grid" && (
-        <Group title="그리드 상품" meta={`${(block.data as GridData).items.length}개`}>
-          <GridEditor block={block} />
-        </Group>
-      )}
-      {block.type === "free" && (
-        <Group title="콘텐츠 블록" meta={`${(block.data as FreeData).items.length}개`} defaultOpen>
-          <FreeEditor block={block} />
-        </Group>
-      )}
+      {/* 끼울 앵커 그룹이 없으면(예: 탭 내비) 맨 뒤에 붙임 */}
+      {!anchorExists && listEditor}
     </div>
   );
 }

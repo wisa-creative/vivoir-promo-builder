@@ -282,6 +282,32 @@ export function Inspector({ block }: { block: Block }) {
           </div>
         </label>
         <label className="field">
+          <span>글자색</span>
+          <div className="color-row">
+            <input
+              type="color"
+              className="color-chip"
+              value={block.fg && /^#[0-9a-fA-F]{6}$/.test(block.fg) ? block.fg : "#111111"}
+              onChange={(e) => setBlockMeta(block.id, { fg: e.target.value })}
+            />
+            <input
+              type="text"
+              value={block.fg ?? ""}
+              placeholder="기본값 (비워두기)"
+              onChange={(e) => setBlockMeta(block.id, { fg: e.target.value })}
+            />
+            {block.fg && (
+              <button
+                className="mini-clear"
+                title="기본 글자색으로"
+                onClick={() => setBlockMeta(block.id, { fg: "" })}
+              >
+                ✕
+              </button>
+            )}
+          </div>
+        </label>
+        <label className="field">
           <span>섹션 배경 이미지</span>
           <ImageUploader
             value={block.bgImage ?? ""}
@@ -524,6 +550,25 @@ function CouponEditor({ block }: { block: Block }) {
               <span className="grid-link-on" title="이 쿠폰의 '쿠폰받기'가 링크로 연결돼요">
                 연결됨
               </span>
+            )}
+          </div>
+          <div className="color-row">
+            <input
+              type="color"
+              className="color-chip"
+              value={c.bg && /^#[0-9a-fA-F]{6}$/.test(c.bg) ? c.bg : "#ffffff"}
+              onChange={(e) => patch(i, { bg: e.target.value })}
+            />
+            <input
+              type="text"
+              placeholder="카드 배경색 (비우면 흰색)"
+              value={c.bg ?? ""}
+              onChange={(e) => patch(i, { bg: e.target.value })}
+            />
+            {(c.bg ?? "").trim() && (
+              <button className="mini-clear" title="흰색으로" onClick={() => patch(i, { bg: "" })}>
+                ✕
+              </button>
             )}
           </div>
         </div>

@@ -26,6 +26,7 @@ export interface CouponItem {
   condition: string; // "5만원 이상 구매 시"
   buttonText?: string; // 받기 버튼 문구 (기본 "쿠폰받기")
   link?: string; // 이 쿠폰의 다운로드 링크 (비우면 '한 번에 다운받기' 버튼만 동작)
+  bg?: string; // 이 쿠폰 카드의 배경색 (비우면 흰색)
 }
 export interface CouponData {
   badge: string;
@@ -115,6 +116,7 @@ export interface Block {
   space?: number; // 섹션 위·아래 추가 여백(px). 기본 0.
   bg?: string; // 섹션 배경색 덮어쓰기(빈 값 = 기본).
   bgImage?: string; // 섹션 배경 이미지(URL 또는 data URL, 빈 값 = 없음).
+  fg?: string; // 섹션 글자색 덮어쓰기(빈 값 = 기본 텍스트색). 뱃지·가격·버튼 등 강조색은 유지.
   navShow?: boolean; // true = 내비 자동 구성에서 이 섹션을 탭으로 노출.
   navLabel?: string; // 자동 내비 탭 이름(비면 섹션 라벨 사용).
 }

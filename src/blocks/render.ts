@@ -22,6 +22,7 @@ interface Ctx {
   space?: number; // 섹션 위·아래 추가 여백(px)
   bg?: string; // 섹션 배경색 덮어쓰기
   bgImage?: string; // 섹션 배경 이미지
+  fg?: string; // 섹션 글자색 덮어쓰기
   allBlocks?: Block[]; // 자동 내비 구성을 위한 전체 블록 목록
 }
 
@@ -63,6 +64,14 @@ function da(
   return s;
 }
 
+// 섹션 글자색(fg)이 지정되면 그 색을, 아니면 기본 텍스트색을 반환
+function inkOf(ctx?: Ctx): string {
+  return ctx?.fg && ctx.fg.trim() ? ctx.fg : C.ink;
+}
+function subOf(ctx?: Ctx): string {
+  return ctx?.fg && ctx.fg.trim() ? ctx.fg : C.inkSub;
+}
+
 // 파랑 아웃라인 pill
 function pill(text: string, ctx?: Ctx, field?: string): string {
   return `<span${field ? ea(ctx, field) : ""} style="display:inline-block;border:1px solid ${C.accentBlue};color:${C.accentBlue};font-size:12px;font-weight:700;padding:5px 12px;border-radius:999px;letter-spacing:-0.02em;">${esc(
@@ -87,10 +96,10 @@ function imageBox(url: string, label: string, opts: ImgOpts = {}): string {
   // 편집 프리뷰: 문구 대신 '이미지 업로드' 아이콘(라인·라운드)만 보여줘요.
   // 내보내기(export): 기존처럼 라벨 문구 유지.
   const center = ctx?.edit
-    ? `<div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:${C.inkSub};pointer-events:none;">
+    ? `<div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:${subOf(ctx)};pointer-events:none;">
         <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M12 16V9"/><path d="M9 12l3-3 3 3"/></svg>
       </div>`
-    : `<span${labelField ? ea(ctx, labelField) : ""} style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:${C.inkSub};font-weight:500;font-size:15px;white-space:nowrap;">${esc(label)}</span>`;
+    : `<span${labelField ? ea(ctx, labelField) : ""} style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:${subOf(ctx)};font-weight:500;font-size:15px;white-space:nowrap;">${esc(label)}</span>`;
   return `<div${drop} style="width:100%;padding-top:${ratio};position:relative;background:${C.imgBox};border-radius:8px;">
     ${center}
   </div>`;
@@ -101,8 +110,8 @@ function priceBlock(consumer: string, sale: string, ctx?: Ctx): string {
   return `<div style="margin-top:18px;">
     <div style="color:${C.muted};font-size:13px;font-weight:500;">소비자가 <span style="text-decoration:line-through;"><span${ea(ctx, "consumerPrice")}>${esc(consumer)}</span>원</span></div>
     <div style="margin-top:5px;">
-      <span style="color:${C.ink};font-size:15px;font-weight:800;">할인가</span>
-      <span style="color:${C.ink};font-size:24px;font-weight:800;margin-left:8px;"><span${ea(ctx, "salePrice")}>${esc(sale)}</span>원</span>
+      <span style="color:${inkOf(ctx)};font-size:15px;font-weight:800;">할인가</span>
+      <span style="color:${inkOf(ctx)};font-size:24px;font-weight:800;margin-left:8px;"><span${ea(ctx, "salePrice")}>${esc(sale)}</span>원</span>
     </div>
   </div>`;
 }
@@ -115,7 +124,7 @@ function ctaButton(
 ): string {
   const s =
     style === "outline"
-      ? `background:${C.white};color:${C.ink};border:1.5px solid ${C.cta};`
+      ? `background:${C.white};color:${inkOf(ctx)};border:1.5px solid ${C.cta};`
       : `background:${C.cta};color:${C.ctaText};border:1.5px solid ${C.cta};`;
   return `<div style="margin-top:22px;">
     <a href="${esc(link || "#")}" style="display:block;width:100%;box-sizing:border-box;text-align:center;${s}font-size:16px;font-weight:700;text-decoration:none;padding:16px 0;border-radius:8px;"><span${ea(ctx, "ctaText")}>${esc(text)}</span></a>
@@ -126,8 +135,8 @@ function ctaButton(
 function noteBlock(note: string, ctx?: Ctx): string {
   if ((!note || !note.trim()) && !ctx?.edit) return "";
   return `<div style="margin-top:22px;">
-    <div style="font-size:14px;font-weight:700;color:${C.ink};margin-bottom:8px;">유의사항</div>
-    <div${ea(ctx, "note")} style="font-size:13px;line-height:1.7;color:${C.inkSub};min-height:1.7em;white-space:pre-line;">${multiline(note)}</div>
+    <div style="font-size:14px;font-weight:700;color:${inkOf(ctx)};margin-bottom:8px;">유의사항</div>
+    <div${ea(ctx, "note")} style="font-size:13px;line-height:1.7;color:${subOf(ctx)};min-height:1.7em;white-space:pre-line;">${multiline(note)}</div>
   </div>`;
 }
 
@@ -158,7 +167,8 @@ function section(
   const bgImgCss = img
     ? `background-image:url(&quot;${esc(img)}&quot;);background-size:cover;background-position:center;background-repeat:no-repeat;`
     : "";
-  return `<section${anchor} style="background-color:${finalBg};${bgImgCss}padding:${finalPad};scroll-margin-top:8px;">${inner}</section>`;
+  const fgCss = ctx?.fg && ctx.fg.trim() ? `color:${ctx.fg};` : "";
+  return `<section${anchor} style="background-color:${finalBg};${bgImgCss}${fgCss}padding:${finalPad};scroll-margin-top:8px;">${inner}</section>`;
 }
 
 // ---- 블록별 렌더 ----
@@ -208,14 +218,15 @@ function renderCoupon(d: CouponData, ctx?: Ctx): string {
   const rows = d.coupons
     .map((cp, i) => {
       const link = (cp.link ?? "").trim();
+      const cardBg = (cp.bg ?? "").trim() || C.white;
       const btnLabel = esc(`↓ ${cp.buttonText?.trim() || "쿠폰받기"}`);
       // 개별 다운로드 링크가 있으면 받기 버튼을 그 링크로 연결해요 (미리보기에선 이동 안 함, 내보낸 HTML에서 이동)
       const getBtn = link
-        ? `<a href="${esc(link)}" style="font-size:13px;color:${C.ink};white-space:nowrap;margin-left:12px;text-decoration:none;font-weight:600;">${btnLabel}</a>`
-        : `<div style="font-size:13px;color:${C.ink};white-space:nowrap;margin-left:12px;">${btnLabel}</div>`;
-      return `<div style="border:1px solid ${C.line};border-radius:12px;background:${C.white};padding:17px 18px;display:flex;justify-content:space-between;align-items:center;">
+        ? `<a href="${esc(link)}" style="font-size:13px;color:${inkOf(ctx)};white-space:nowrap;margin-left:12px;text-decoration:none;font-weight:600;">${btnLabel}</a>`
+        : `<div style="font-size:13px;color:${inkOf(ctx)};white-space:nowrap;margin-left:12px;">${btnLabel}</div>`;
+      return `<div style="border:1px solid ${C.line};border-radius:12px;background:${cardBg};padding:17px 18px;display:flex;justify-content:space-between;align-items:center;">
         <div style="min-width:0;">
-          <div${ea(ctx, "coupons", { index: i, subfield: "amount" })} style="font-size:15px;font-weight:700;color:${C.ink};">${esc(cp.amount)}</div>
+          <div${ea(ctx, "coupons", { index: i, subfield: "amount" })} style="font-size:15px;font-weight:700;color:${inkOf(ctx)};">${esc(cp.amount)}</div>
           <div${ea(ctx, "coupons", { index: i, subfield: "condition" })} style="margin-top:6px;font-size:12px;font-weight:600;color:${C.orange};">${esc(cp.condition)}</div>
         </div>
         ${getBtn}
@@ -224,22 +235,22 @@ function renderCoupon(d: CouponData, ctx?: Ctx): string {
     .join("");
   const inner = `<div style="text-align:left;">
       ${pill(d.badge, ctx, "badge")}
-      <h2${ea(ctx, "title")} style="margin:14px 0 0;font-size:24px;font-weight:800;color:${C.ink};line-height:1.3;white-space:pre-line;">${esc(d.title)}</h2>
-      <p${ea(ctx, "subtitle")} style="margin:12px 0 0;font-size:14px;line-height:1.65;color:${C.inkSub};white-space:pre-line;">${esc(d.subtitle)}</p>
+      <h2${ea(ctx, "title")} style="margin:14px 0 0;font-size:24px;font-weight:800;color:${inkOf(ctx)};line-height:1.3;white-space:pre-line;">${esc(d.title)}</h2>
+      <p${ea(ctx, "subtitle")} style="margin:12px 0 0;font-size:14px;line-height:1.65;color:${subOf(ctx)};white-space:pre-line;">${esc(d.subtitle)}</p>
     </div>
     <div style="display:flex;flex-direction:column;gap:10px;margin-top:22px;">${rows}</div>
     ${ctaButton(d.downloadText, d.downloadLink || "#", "outline", ctx)}
     <details style="margin-top:20px;text-align:center;">
-      <summary style="cursor:pointer;color:${C.inkSub};font-size:14px;">유의사항 ⌄</summary>
-      <div${ea(ctx, "note")} style="margin-top:12px;text-align:left;font-size:13px;line-height:1.7;color:${C.inkSub};white-space:pre-line;min-height:1.7em;">${multiline(d.note)}</div>
+      <summary style="cursor:pointer;color:${subOf(ctx)};font-size:14px;">유의사항 ⌄</summary>
+      <div${ea(ctx, "note")} style="margin-top:12px;text-align:left;font-size:13px;line-height:1.7;color:${subOf(ctx)};white-space:pre-line;min-height:1.7em;">${multiline(d.note)}</div>
     </details>`;
   return section(inner, C.white, "40px 22px 44px", ctx?.id, ctx);
 }
 
 function renderHeader(d: HeaderData, ctx?: Ctx): string {
   const inner = `<div style="text-align:center;">
-      <h2${ea(ctx, "title")} style="margin:0;font-size:26px;font-weight:800;color:${C.ink};line-height:1.3;white-space:pre-line;">${esc(d.title)}</h2>
-      <p${ea(ctx, "subtitle")} style="margin:12px 0 0;font-size:14px;line-height:1.6;color:${C.inkSub};white-space:pre-line;">${esc(d.subtitle)}</p>
+      <h2${ea(ctx, "title")} style="margin:0;font-size:26px;font-weight:800;color:${inkOf(ctx)};line-height:1.3;white-space:pre-line;">${esc(d.title)}</h2>
+      <p${ea(ctx, "subtitle")} style="margin:12px 0 0;font-size:14px;line-height:1.6;color:${subOf(ctx)};white-space:pre-line;">${esc(d.subtitle)}</p>
     </div>`;
   return section(inner, C.page, "44px 22px 4px", ctx?.id, ctx);
 }
@@ -247,8 +258,8 @@ function renderHeader(d: HeaderData, ctx?: Ctx): string {
 function renderProduct(d: ProductData, ctx?: Ctx): string {
   const inner = `<div style="text-align:left;">
       ${d.badge ? pill(d.badge, ctx, "badge") : ""}
-      <h2${ea(ctx, "title")} style="margin:${d.badge ? "14px" : "0"} 0 0;font-size:24px;font-weight:800;color:${C.ink};line-height:1.3;white-space:pre-line;letter-spacing:-0.02em;">${esc(d.title)}</h2>
-      <p${ea(ctx, "subtitle")} style="margin:12px 0 0;font-size:14px;line-height:1.65;color:${C.inkSub};white-space:pre-line;">${esc(d.subtitle)}</p>
+      <h2${ea(ctx, "title")} style="margin:${d.badge ? "14px" : "0"} 0 0;font-size:24px;font-weight:800;color:${inkOf(ctx)};line-height:1.3;white-space:pre-line;letter-spacing:-0.02em;">${esc(d.title)}</h2>
+      <p${ea(ctx, "subtitle")} style="margin:12px 0 0;font-size:14px;line-height:1.65;color:${subOf(ctx)};white-space:pre-line;">${esc(d.subtitle)}</p>
     </div>
     <div style="margin-top:20px;">${imageBox(d.imageUrl, d.imageLabel, { ratio: "100%", ctx, labelField: "imageLabel", dropField: "imageUrl" })}</div>
     ${priceBlock(d.consumerPrice, d.salePrice, ctx)}
@@ -268,16 +279,16 @@ function renderGrid(d: GridData, ctx?: Ctx): string {
       const closeTag = link ? `</a>` : `</div>`;
       return `${openTag}
         ${imageBox(it.imageUrl, "소모품 이미지", { ratio: "100%", ctx, dropField: "items", dropIndex: idx, dropSubfield: "imageUrl" })}
-        <div style="margin-top:10px;font-size:13px;font-weight:600;color:${C.ink};line-height:1.4;">${esc(it.name)}</div>
+        <div style="margin-top:10px;font-size:13px;font-weight:600;color:${inkOf(ctx)};line-height:1.4;">${esc(it.name)}</div>
         <div style="margin-top:5px;">
           <span style="color:${C.orange};font-size:13px;font-weight:800;">${esc(it.percent)}</span>
           <span style="color:${C.muted};font-size:12px;text-decoration:line-through;margin-left:6px;">${esc(it.consumerPrice)}원</span>
         </div>
-        <div style="margin-top:2px;font-size:16px;font-weight:800;color:${C.ink};">${esc(it.salePrice)}원</div>
+        <div style="margin-top:2px;font-size:16px;font-weight:800;color:${inkOf(ctx)};">${esc(it.salePrice)}원</div>
       ${closeTag}`;
     })
     .join("");
-  const inner = `<h2${ea(ctx, "title")} style="margin:0 0 20px;font-size:22px;font-weight:800;color:${C.ink};line-height:1.3;white-space:pre-line;">${esc(d.title)}</h2>
+  const inner = `<h2${ea(ctx, "title")} style="margin:0 0 20px;font-size:22px;font-weight:800;color:${inkOf(ctx)};line-height:1.3;white-space:pre-line;">${esc(d.title)}</h2>
     <div style="display:flex;flex-wrap:wrap;gap:12px;">${cells}</div>
     ${ctaButton(d.ctaText, d.ctaLink, "outline", ctx)}`;
   return section(inner, C.page, "40px 22px 44px", ctx?.id, ctx);
@@ -286,8 +297,8 @@ function renderGrid(d: GridData, ctx?: Ctx): string {
 function renderReview(d: ReviewData, ctx?: Ctx): string {
   const inner = `<div style="text-align:left;">
       ${d.badge ? pill(d.badge, ctx, "badge") : ""}
-      <h2${ea(ctx, "title")} style="margin:${d.badge ? "14px" : "0"} 0 0;font-size:24px;font-weight:800;color:${C.ink};line-height:1.3;white-space:pre-line;">${esc(d.title)}</h2>
-      <p${ea(ctx, "subtitle")} style="margin:12px 0 0;font-size:14px;line-height:1.65;color:${C.inkSub};white-space:pre-line;">${esc(d.subtitle)}</p>
+      <h2${ea(ctx, "title")} style="margin:${d.badge ? "14px" : "0"} 0 0;font-size:24px;font-weight:800;color:${inkOf(ctx)};line-height:1.3;white-space:pre-line;">${esc(d.title)}</h2>
+      <p${ea(ctx, "subtitle")} style="margin:12px 0 0;font-size:14px;line-height:1.65;color:${subOf(ctx)};white-space:pre-line;">${esc(d.subtitle)}</p>
     </div>
     <div style="margin-top:20px;">${imageBox(d.bannerUrl, d.bannerLabel, { ratio: "62%", ctx, labelField: "bannerLabel", dropField: "bannerUrl" })}</div>
     ${ctaButton(d.ctaText, d.ctaLink, "dark", ctx)}
@@ -300,8 +311,8 @@ function renderFree(d: FreeData, ctx?: Ctx): string {
     d.badge || d.title || d.subtitle || ctx?.edit
       ? `<div style="text-align:left;margin-bottom:${d.items.length ? "20px" : "0"};">
       ${d.badge ? pill(d.badge, ctx, "badge") : ""}
-      <h2${ea(ctx, "title")} style="margin:${d.badge ? "14px" : "0"} 0 0;font-size:24px;font-weight:800;color:${C.ink};line-height:1.3;white-space:pre-line;letter-spacing:-0.02em;">${esc(d.title)}</h2>
-      <p${ea(ctx, "subtitle")} style="margin:12px 0 0;font-size:14px;line-height:1.65;color:${C.inkSub};white-space:pre-line;">${esc(d.subtitle)}</p>
+      <h2${ea(ctx, "title")} style="margin:${d.badge ? "14px" : "0"} 0 0;font-size:24px;font-weight:800;color:${inkOf(ctx)};line-height:1.3;white-space:pre-line;letter-spacing:-0.02em;">${esc(d.title)}</h2>
+      <p${ea(ctx, "subtitle")} style="margin:12px 0 0;font-size:14px;line-height:1.65;color:${subOf(ctx)};white-space:pre-line;">${esc(d.subtitle)}</p>
     </div>`
       : "";
   const body = d.items
@@ -309,7 +320,7 @@ function renderFree(d: FreeData, ctx?: Ctx): string {
       if (it.type === "image") {
         return `<div style="margin:${i ? "14px" : "0"} 0 0;">${imageBox(it.imageUrl ?? "", it.imageLabel ?? "이미지", { ratio: "62%", ctx, labelField: undefined, dropField: "items", dropIndex: i, dropSubfield: "imageUrl" })}</div>`;
       }
-      return `<div${ea(ctx, "items", { index: i, subfield: "text" })} style="margin:${i ? "14px" : "0"} 0 0;font-size:15px;line-height:1.7;color:${C.ink};white-space:pre-line;min-height:1.5em;">${multiline(it.text ?? "")}</div>`;
+      return `<div${ea(ctx, "items", { index: i, subfield: "text" })} style="margin:${i ? "14px" : "0"} 0 0;font-size:15px;line-height:1.7;color:${inkOf(ctx)};white-space:pre-line;min-height:1.5em;">${multiline(it.text ?? "")}</div>`;
     })
     .join("");
   const cta = d.ctaText && d.ctaText.trim() ? ctaButton(d.ctaText, d.ctaLink, d.ctaStyle === "outline" ? "outline" : "dark", ctx) : "";
@@ -325,6 +336,7 @@ export function renderBlock(block: Block, ctx?: Ctx): string {
     space: block.space,
     bg: block.bg,
     bgImage: block.bgImage,
+    fg: block.fg,
     allBlocks: ctx?.allBlocks,
   };
   switch (block.type) {

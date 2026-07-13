@@ -21,6 +21,7 @@ interface Ctx {
   id?: string;
   space?: number; // 섹션 위·아래 추가 여백(px)
   bg?: string; // 섹션 배경색 덮어쓰기
+  bgImage?: string; // 섹션 배경 이미지
   allBlocks?: Block[]; // 자동 내비 구성을 위한 전체 블록 목록
 }
 
@@ -152,7 +153,12 @@ function section(
   const anchor = id ? ` id="${esc(id)}"` : "";
   const finalBg = ctx?.bg && ctx.bg.trim() ? ctx.bg : bg;
   const finalPad = padWithExtra(pad, ctx?.space ?? 0);
-  return `<section${anchor} style="background:${finalBg};padding:${finalPad};scroll-margin-top:8px;">${inner}</section>`;
+  const img = (ctx?.bgImage ?? "").trim();
+  // 배경색을 fallback으로 두고 그 위에 이미지를 cover로 깐다.
+  const bgImgCss = img
+    ? `background-image:url(&quot;${esc(img)}&quot;);background-size:cover;background-position:center;background-repeat:no-repeat;`
+    : "";
+  return `<section${anchor} style="background-color:${finalBg};${bgImgCss}padding:${finalPad};scroll-margin-top:8px;">${inner}</section>`;
 }
 
 // ---- 블록별 렌더 ----
@@ -318,6 +324,7 @@ export function renderBlock(block: Block, ctx?: Ctx): string {
     id: block.id,
     space: block.space,
     bg: block.bg,
+    bgImage: block.bgImage,
     allBlocks: ctx?.allBlocks,
   };
   switch (block.type) {

@@ -281,6 +281,13 @@ export function Inspector({ block }: { block: Block }) {
             )}
           </div>
         </label>
+        <label className="field">
+          <span>섹션 배경 이미지</span>
+          <ImageUploader
+            value={block.bgImage ?? ""}
+            onChange={(url) => setBlockMeta(block.id, { bgImage: url })}
+          />
+        </label>
         {block.type !== "nav" && (
           <>
             <div className="field-row-inline">

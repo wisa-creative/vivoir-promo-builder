@@ -114,6 +114,7 @@ export interface Block {
   enabled?: boolean; // false = 섹션 끔(미리보기·내보내기에서 제외). 기본 true.
   space?: number; // 섹션 위·아래 추가 여백(px). 기본 0.
   bg?: string; // 섹션 배경색 덮어쓰기(빈 값 = 기본).
+  bgImage?: string; // 섹션 배경 이미지(URL 또는 data URL, 빈 값 = 없음).
   navShow?: boolean; // true = 내비 자동 구성에서 이 섹션을 탭으로 노출.
   navLabel?: string; // 자동 내비 탭 이름(비면 섹션 라벨 사용).
 }

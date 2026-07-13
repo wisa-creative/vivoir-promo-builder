@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 
 export interface SelectOption {
   value: string;
@@ -22,10 +22,39 @@ export function Select({
 }) {
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState(0);
+  const [menuStyle, setMenuStyle] = useState<React.CSSProperties>({});
   const rootRef = useRef<HTMLDivElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
 
   const current = options.find((o) => o.value === value);
+
+  // 드롭다운을 화면 기준(fixed)으로 띄워 패널 스크롤에 잘리지 않게, 아래 공간이 좁으면 위로 펼쳐요
+  const place = useCallback(() => {
+    const el = rootRef.current;
+    if (!el) return;
+    const r = el.getBoundingClientRect();
+    const gap = 6;
+    const maxH = 240;
+    const spaceBelow = window.innerHeight - r.bottom;
+    const spaceAbove = r.top;
+    const openUp = spaceBelow < Math.min(maxH, 160) && spaceAbove > spaceBelow;
+    const style: React.CSSProperties = {
+      position: "fixed",
+      left: r.left,
+      width: r.width,
+      right: "auto",
+      zIndex: 1000,
+    };
+    if (openUp) {
+      style.bottom = window.innerHeight - r.top + gap;
+      style.top = "auto";
+      style.maxHeight = Math.min(maxH, spaceAbove - gap - 8);
+    } else {
+      style.top = r.bottom + gap;
+      style.maxHeight = Math.min(maxH, spaceBelow - gap - 8);
+    }
+    setMenuStyle(style);
+  }, []);
 
   // 바깥 클릭 · ESC 로 닫기
   useEffect(() => {
@@ -51,6 +80,21 @@ export function Select({
       setActive(i < 0 ? 0 : i);
     }
   }, [open, value, options]);
+
+  // 열릴 때 위치 계산 + 스크롤·리사이즈에 맞춰 재배치
+  useLayoutEffect(() => {
+    if (open) place();
+  }, [open, place, options.length]);
+  useEffect(() => {
+    if (!open) return;
+    const on = () => place();
+    window.addEventListener("scroll", on, true);
+    window.addEventListener("resize", on);
+    return () => {
+      window.removeEventListener("scroll", on, true);
+      window.removeEventListener("resize", on);
+    };
+  }, [open, place]);
 
   function choose(v: string) {
     onChange(v);
@@ -94,7 +138,7 @@ export function Select({
         <span className="cs-caret" aria-hidden />
       </button>
       {open && (
-        <div className="cs-list" role="listbox" ref={listRef}>
+        <div className="cs-list" role="listbox" ref={listRef} style={menuStyle}>
           {options.map((o, i) => (
             <div
               key={o.value}

@@ -36,6 +36,8 @@ export interface CouponData {
   coupons: CouponItem[];
   downloadText: string; // "한 번에 다운받기"
   downloadLink?: string; // '한 번에 다운받기' 버튼 링크 (쿠폰 전체 받기)
+  downloadBg?: string; // 다운로드 버튼 배경색 (비우면 흰색 외곽선 스타일)
+  downloadFg?: string; // 다운로드 버튼 글씨색 (비우면 기본 텍스트색)
 }
 // 섹션 구분 헤더 (가운데 큰 제목 + 서브)
 export interface HeaderData {

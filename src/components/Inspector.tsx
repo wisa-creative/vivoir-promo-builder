@@ -163,6 +163,36 @@ function FieldRow({ block, f }: { block: Block; f: Field }) {
       </label>
     );
   }
+  if (f.kind === "color") {
+    return (
+      <label className="field">
+        <span>{f.label}</span>
+        <div className="color-row">
+          <input
+            type="color"
+            className="color-chip"
+            value={/^#[0-9a-fA-F]{6}$/.test(val) ? val : "#ffffff"}
+            onChange={(e) => update(block.id, { [f.key]: e.target.value })}
+          />
+          <input
+            type="text"
+            value={val}
+            placeholder={f.placeholder || "기본값 (비워두기)"}
+            onChange={(e) => update(block.id, { [f.key]: e.target.value })}
+          />
+          {val.trim() && (
+            <button
+              className="mini-clear"
+              title="기본값으로"
+              onClick={() => update(block.id, { [f.key]: "" })}
+            >
+              ✕
+            </button>
+          )}
+        </div>
+      </label>
+    );
+  }
   return (
     <label className="field">
       <span>{f.label}</span>
@@ -536,8 +566,8 @@ function CouponEditor({ block }: { block: Block }) {
             onChange={(e) => patch(i, { condition: e.target.value })}
           />
           <input
-            placeholder="받기 버튼 문구 (기본: 쿠폰받기)"
-            value={c.buttonText ?? ""}
+            placeholder="받기 버튼 문구"
+            value={c.buttonText || "쿠폰받기"}
             onChange={(e) => patch(i, { buttonText: e.target.value })}
           />
           <div className="row grid-link-row">

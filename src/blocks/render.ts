@@ -209,6 +209,18 @@ function renderNav(d: NavData, ctx?: Ctx): string {
   return `<nav${anchor} style="background:${navBg};border-bottom:1px solid ${C.line};"><div style="max-width:${tokens.layout.maxWidth}px;margin:0 auto;padding:0 8px;overflow-x:auto;white-space:nowrap;-webkit-overflow-scrolling:touch;scrollbar-width:none;-ms-overflow-style:none;">${items}</div></nav>`;
 }
 
+// 쿠폰팩 '한 번에 다운받기' 버튼. 색을 지정하면 채움 버튼, 비우면 흰 배경 외곽선 기본.
+function downloadButton(d: CouponData, ctx?: Ctx): string {
+  const bgSet = (d.downloadBg ?? "").trim();
+  const fgSet = (d.downloadFg ?? "").trim();
+  const bg = bgSet || C.white;
+  const fg = fgSet || inkOf(ctx);
+  const border = bgSet || C.cta; // 배경색을 지정하면 테두리도 같은 색(채움), 아니면 기본 외곽선
+  return `<div style="margin-top:22px;">
+    <a href="${esc(d.downloadLink || "#")}" style="display:block;width:100%;box-sizing:border-box;text-align:center;background:${bg};color:${fg};border:1.5px solid ${border};font-size:16px;font-weight:700;text-decoration:none;padding:16px 0;border-radius:8px;"><span${ea(ctx, "downloadText")}>${esc(d.downloadText)}</span></a>
+  </div>`;
+}
+
 function renderCoupon(d: CouponData, ctx?: Ctx): string {
   const rows = d.coupons
     .map((cp, i) => {
@@ -234,7 +246,7 @@ function renderCoupon(d: CouponData, ctx?: Ctx): string {
       <p${ea(ctx, "subtitle")} style="margin:12px 0 0;font-size:14px;line-height:1.65;color:${subOf(ctx)};white-space:pre-line;">${esc(d.subtitle)}</p>
     </div>
     <div style="display:flex;flex-direction:column;gap:10px;margin-top:22px;">${rows}</div>
-    ${ctaButton(d.downloadText, d.downloadLink || "#", "outline", ctx)}`;
+    ${downloadButton(d, ctx)}`;
   return section(inner, C.white, "40px 22px 44px", ctx?.id, ctx);
 }
 

@@ -210,13 +210,15 @@ button { font-family: inherit; cursor: pointer; }
 
 .field { display: flex; flex-direction: column; gap: 7px; margin-bottom: 14px; }
 .field > span { font-size: 13px; font-weight: 600; color: var(--txt-secondary); }
-.field input[type=text], .field textarea, .sub input, .card-edit input {
+.field input[type=text], .field textarea, .sub input:not([type=color]), .card-edit input:not([type=color]) {
   border: 1.5px solid var(--border-secondary); border-radius: 12px; padding: 12px 14px; font-size: 14px;
   font-family: inherit; width: 100%; resize: vertical;
   color: var(--txt-primary); background: var(--bg-primary); transition: .15s; outline: none;
 }
-.field input::placeholder, .field textarea::placeholder, .sub input::placeholder, .card-edit input::placeholder { color: var(--txt-disabled); }
-.field input:focus, .field textarea:focus, .sub input:focus, .card-edit input:focus { border-color: var(--blue-500); }
+.field input:not([type=color])::placeholder, .field textarea::placeholder, .sub input:not([type=color])::placeholder, .card-edit input:not([type=color])::placeholder { color: var(--txt-disabled); }
+.field input:not([type=color]):focus, .field textarea:focus, .sub input:not([type=color]):focus, .card-edit input:not([type=color]):focus { border-color: var(--blue-500); }
+/* 카드/리스트 안에서도 색상 칩은 40px 정사각형으로 (일반 input 규칙에 눌리지 않게) */
+.card-edit .color-chip, .sub .color-chip { width: 40px; height: 40px; padding: 0; }
 /* 커스텀 드롭다운 (네이티브 select 대체) */
 .cs-select { position: relative; width: 100%; }
 .cs-trigger {

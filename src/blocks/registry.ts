@@ -3,7 +3,7 @@ import type { Block, BlockType } from "../types";
 let counter = 0;
 export const newId = () => `b${Date.now().toString(36)}${(counter++).toString(36)}`;
 
-export type FieldKind = "text" | "textarea" | "image" | "cta-style";
+export type FieldKind = "text" | "textarea" | "image" | "cta-style" | "color";
 export interface Field {
   key: string;
   label: string;
@@ -71,6 +71,8 @@ export const BLOCKS: Record<BlockType, BlockMeta> = {
       { key: "subtitle", label: "서브카피", kind: "textarea", group: "타이틀 / 문구" },
       { key: "downloadText", label: "다운로드 버튼", kind: "text", placeholder: "한 번에 다운받기", group: "다운로드 버튼" },
       { key: "downloadLink", label: "다운로드 버튼 링크", kind: "text", placeholder: "https://… (쿠폰 전체 받기)", group: "다운로드 버튼" },
+      { key: "downloadBg", label: "버튼 색상", kind: "color", group: "다운로드 버튼" },
+      { key: "downloadFg", label: "버튼 글씨색", kind: "color", group: "다운로드 버튼" },
     ],
     create: () => ({
       id: newId(),

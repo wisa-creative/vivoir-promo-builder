@@ -15,7 +15,7 @@ interface State {
   updateData: (id: string, patch: Record<string, unknown>) => void;
   setBlockMeta: (
     id: string,
-    patch: Partial<Pick<Block, "enabled" | "space" | "bg" | "bgImage" | "fg" | "navShow" | "navLabel">>,
+    patch: Partial<Pick<Block, "name" | "enabled" | "space" | "bg" | "bgImage" | "fg" | "navShow" | "navLabel">>,
   ) => void;
   toggleEnabled: (id: string) => void;
   replaceAll: (blocks: Block[]) => void;

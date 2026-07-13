@@ -118,6 +118,7 @@ export interface Block {
   id: string;
   type: BlockType;
   data: BlockData;
+  name?: string; // 왼쪽 블록 목록에 보이는 이름(비면 블록 종류 기본 라벨 사용).
   enabled?: boolean; // false = 섹션 끔(미리보기·내보내기에서 제외). 기본 true.
   space?: number; // 섹션 위·아래 추가 여백(px). 기본 0.
   bg?: string; // 섹션 배경색 덮어쓰기(빈 값 = 기본).

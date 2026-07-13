@@ -25,13 +25,27 @@ export function App() {
   const blocks = useStore((s) => s.blocks);
   const selectedId = useStore((s) => s.selectedId);
   const savedAt = useStore((s) => s.savedAt);
-  const { addBlock, removeBlock, moveBlockTo, select, toggleEnabled, resetDoc, markSaved } =
+  const { addBlock, removeBlock, moveBlockTo, select, toggleEnabled, resetDoc, markSaved, setBlockMeta } =
     useStore();
+
+  function startRename(id: string, current: string) {
+    setRenamingId(id);
+    setRenameText(current);
+  }
+  function commitRename() {
+    if (renamingId) {
+      const v = renameText.trim();
+      setBlockMeta(renamingId, { name: v || undefined });
+    }
+    setRenamingId(null);
+  }
   const [toast, setToast] = useState("");
   const [dark, setDark] = useState(false);
   const [dragId, setDragId] = useState<string | null>(null);
   const [overId, setOverId] = useState<string | null>(null);
   const [overPos, setOverPos] = useState<"before" | "after">("before");
+  const [renamingId, setRenamingId] = useState<string | null>(null);
+  const [renameText, setRenameText] = useState("");
   const [pvW, setPvW] = useState(430); // 프리뷰 폭(px)
   const [resizing, setResizing] = useState(false);
   const [tplOpen, setTplOpen] = useState(false);
@@ -250,7 +264,7 @@ export function App() {
                       : " drop-before"
                     : "")
                 }
-                draggable
+                draggable={renamingId !== b.id}
                 onDragStart={(e) => {
                   setDragId(b.id);
                   e.dataTransfer.effectAllowed = "move";
@@ -273,7 +287,31 @@ export function App() {
                 onClick={() => selectAndScroll(b.id)}
               >
                 <span className="grip" title="드래그해서 옮기기">⠿</span>
-                <span className="name">{BLOCKS[b.type].label}</span>
+                {renamingId === b.id ? (
+                  <input
+                    className="name-edit"
+                    value={renameText}
+                    autoFocus
+                    onChange={(e) => setRenameText(e.target.value)}
+                    onClick={(e) => e.stopPropagation()}
+                    onBlur={commitRename}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") commitRename();
+                      if (e.key === "Escape") setRenamingId(null);
+                    }}
+                  />
+                ) : (
+                  <span
+                    className="name"
+                    title="더블클릭해서 이름 바꾸기"
+                    onDoubleClick={(e) => {
+                      e.stopPropagation();
+                      startRename(b.id, b.name || BLOCKS[b.type].label);
+                    }}
+                  >
+                    {b.name || BLOCKS[b.type].label}
+                  </span>
+                )}
                 <button
                   className={"onoff sm" + (b.enabled !== false ? " on" : "")}
                   title={b.enabled !== false ? "섹션 끄기" : "섹션 켜기"}

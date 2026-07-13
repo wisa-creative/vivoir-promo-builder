@@ -173,9 +173,30 @@ button { font-family: inherit; cursor: pointer; }
 .resize-handle:hover::after { background: var(--blue-500); height: 72px; }
 
 /* 인스펙터 컬러 헤더 (섹션 타입별 색) */
-.insp-head { border-radius: 14px; padding: 14px 16px; margin-bottom: 14px; color: #fff; box-shadow: var(--shadow-sm); }
-.insp-head-code { font-size: 11px; font-weight: 700; letter-spacing: .08em; opacity: .8; }
-.insp-head-title { font-size: 16px; font-weight: 800; margin-top: 3px; letter-spacing: -.01em; }
+.insp-head {
+  display: flex; flex-direction: column; gap: 6px;
+  border: 1px solid var(--border-tertiary); border-radius: 14px;
+  padding: 14px 16px; margin-bottom: 14px;
+  background: var(--bg-primary); color: var(--txt-primary); box-shadow: var(--shadow-sm);
+}
+.insp-head-code {
+  display: inline-flex; align-items: center; gap: 7px;
+  font-size: 11px; font-weight: 700; letter-spacing: .08em; color: var(--txt-tertiary);
+}
+.insp-head-dot { width: 8px; height: 8px; border-radius: 50%; flex: 0 0 auto; }
+.insp-head-title {
+  font-size: 16px; font-weight: 800; letter-spacing: -.01em;
+  display: inline-flex; align-items: center; gap: 6px; cursor: text; max-width: 100%;
+}
+.insp-head-title > span:first-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.insp-head-edit-ic { font-size: 12px; color: var(--txt-disabled); opacity: 0; transition: opacity var(--dur-fast) var(--ease); flex: 0 0 auto; }
+.insp-head-title:hover .insp-head-edit-ic { opacity: 1; }
+.insp-head-name-edit {
+  font-size: 16px; font-weight: 800; letter-spacing: -.01em; width: 100%;
+  color: var(--txt-primary); background: var(--bg-primary);
+  border: 1px solid var(--blue-500); border-radius: 8px; padding: 3px 8px; outline: none;
+  box-shadow: 0 0 0 2px var(--bg-blue-primary);
+}
 
 /* 접이식 설정 묶음 */
 .insp-group { border: 1px solid var(--border-tertiary); border-radius: 12px; margin-bottom: 10px; background: var(--bg-primary); overflow: hidden; }

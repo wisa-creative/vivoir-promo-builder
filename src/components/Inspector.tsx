@@ -219,6 +219,18 @@ export function Inspector({ block }: { block: Block }) {
   const meta = BLOCKS[block.type];
   const setBlockMeta = useStore((s) => s.setBlockMeta);
   const enabled = block.enabled !== false;
+  const [editingName, setEditingName] = useState(false);
+  const [nameText, setNameText] = useState("");
+
+  function startEditName() {
+    setNameText(block.name || meta.label);
+    setEditingName(true);
+  }
+  function commitName() {
+    const v = nameText.trim();
+    setBlockMeta(block.id, { name: v || undefined });
+    setEditingName(false);
+  }
 
   // 필드를 group 기준으로 묶기(순서 유지)
   const groups: { name: string; fields: Field[] }[] = [];
@@ -263,9 +275,29 @@ export function Inspector({ block }: { block: Block }) {
 
   return (
     <div className="inspector">
-      <div className="insp-head" style={{ background: meta.accent }}>
-        <div className="insp-head-code">{`${meta.code} · S${idx + 1}`}</div>
-        <div className="insp-head-title">{meta.label} 편집</div>
+      <div className="insp-head">
+        <div className="insp-head-code">
+          <span className="insp-head-dot" style={{ background: meta.accent }} />
+          {`${meta.code} · S${idx + 1}`}
+        </div>
+        {editingName ? (
+          <input
+            className="insp-head-name-edit"
+            value={nameText}
+            autoFocus
+            onChange={(e) => setNameText(e.target.value)}
+            onBlur={commitName}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") commitName();
+              if (e.key === "Escape") setEditingName(false);
+            }}
+          />
+        ) : (
+          <div className="insp-head-title" onClick={startEditName} title="눌러서 이름 바꾸기">
+            <span>{block.name || meta.label}</span>
+            <span className="insp-head-edit-ic" aria-hidden>✎</span>
+          </div>
+        )}
       </div>
 
       <Group title="섹션 설정" defaultOpen>

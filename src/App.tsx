@@ -403,7 +403,7 @@ export function App() {
         {/* 우: 인스펙터 */}
         <aside className="panel right">
           {selected ? (
-            <Inspector block={selected} />
+            <Inspector key={selected.id} block={selected} />
           ) : (
             <div className="empty">가운데 화면에서 문구를 바로 고치거나,
               <br />왼쪽에서 블록을 골라 편집할 수 있어요.</div>

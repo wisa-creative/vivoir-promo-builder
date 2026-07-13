@@ -164,6 +164,9 @@ function FieldRow({ block, f }: { block: Block; f: Field }) {
     );
   }
   if (f.kind === "color") {
+    // 글씨색 계열(fg)은 검은색, 그 외(배경 등)는 흰색을 기본으로 보여줘요.
+    const dft = f.key.toLowerCase().includes("fg") ? "#000000" : "#ffffff";
+    const shown = val.trim() || dft;
     return (
       <label className="field">
         <span>{f.label}</span>
@@ -171,13 +174,12 @@ function FieldRow({ block, f }: { block: Block; f: Field }) {
           <input
             type="color"
             className="color-chip"
-            value={/^#[0-9a-fA-F]{6}$/.test(val) ? val : "#ffffff"}
+            value={/^#[0-9a-fA-F]{6}$/.test(shown) ? shown : dft}
             onChange={(e) => update(block.id, { [f.key]: e.target.value })}
           />
           <input
             type="text"
-            value={val}
-            placeholder={f.placeholder || "기본값 (비워두기)"}
+            value={shown}
             onChange={(e) => update(block.id, { [f.key]: e.target.value })}
           />
           {val.trim() && (
@@ -296,8 +298,7 @@ export function Inspector({ block }: { block: Block }) {
             />
             <input
               type="text"
-              value={block.bg ?? ""}
-              placeholder="기본값 (비워두기)"
+              value={block.bg && block.bg.trim() ? block.bg : "#ffffff"}
               onChange={(e) => setBlockMeta(block.id, { bg: e.target.value })}
             />
             {block.bg && (
@@ -317,13 +318,12 @@ export function Inspector({ block }: { block: Block }) {
             <input
               type="color"
               className="color-chip"
-              value={block.fg && /^#[0-9a-fA-F]{6}$/.test(block.fg) ? block.fg : "#111111"}
+              value={block.fg && /^#[0-9a-fA-F]{6}$/.test(block.fg) ? block.fg : "#000000"}
               onChange={(e) => setBlockMeta(block.id, { fg: e.target.value })}
             />
             <input
               type="text"
-              value={block.fg ?? ""}
-              placeholder="기본값 (비워두기)"
+              value={block.fg && block.fg.trim() ? block.fg : "#000000"}
               onChange={(e) => setBlockMeta(block.id, { fg: e.target.value })}
             />
             {block.fg && (
@@ -591,8 +591,7 @@ function CouponEditor({ block }: { block: Block }) {
             />
             <input
               type="text"
-              placeholder="카드 배경색 (비우면 흰색)"
-              value={c.bg ?? ""}
+              value={c.bg && c.bg.trim() ? c.bg : "#ffffff"}
               onChange={(e) => patch(i, { bg: e.target.value })}
             />
             {(c.bg ?? "").trim() && (

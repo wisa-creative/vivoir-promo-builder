@@ -31,6 +31,7 @@ export function App() {
   const [dark, setDark] = useState(false);
   const [dragId, setDragId] = useState<string | null>(null);
   const [overId, setOverId] = useState<string | null>(null);
+  const [overPos, setOverPos] = useState<"before" | "after">("before");
   const [pvW, setPvW] = useState(430); // 프리뷰 폭(px)
   const [resizing, setResizing] = useState(false);
   const [tplOpen, setTplOpen] = useState(false);
@@ -171,8 +172,11 @@ export function App() {
 
   function onDrop(targetId: string) {
     if (dragId && dragId !== targetId) {
-      const toIndex = blocks.findIndex((x) => x.id === targetId);
-      moveBlockTo(dragId, toIndex);
+      // 드래그 중인 블록을 뺀 배열 기준으로 넣을 위치를 계산해요
+      const rest = blocks.filter((x) => x.id !== dragId);
+      const targetPos = rest.findIndex((x) => x.id === targetId);
+      const insertAt = overPos === "after" ? targetPos + 1 : targetPos;
+      moveBlockTo(dragId, insertAt);
     }
     setDragId(null);
     setOverId(null);
@@ -240,7 +244,11 @@ export function App() {
                   (b.id === selectedId ? " sel" : "") +
                   (b.id === dragId ? " dragging" : "") +
                   (b.enabled === false ? " off" : "") +
-                  (b.id === overId && dragId && dragId !== b.id ? " drag-over" : "")
+                  (b.id === overId && dragId && dragId !== b.id
+                    ? overPos === "after"
+                      ? " drop-after"
+                      : " drop-before"
+                    : "")
                 }
                 draggable
                 onDragStart={(e) => {
@@ -249,7 +257,10 @@ export function App() {
                 }}
                 onDragOver={(e) => {
                   e.preventDefault();
+                  const r = e.currentTarget.getBoundingClientRect();
+                  const pos = e.clientY < r.top + r.height / 2 ? "before" : "after";
                   if (overId !== b.id) setOverId(b.id);
+                  if (overPos !== pos) setOverPos(pos);
                 }}
                 onDrop={(e) => {
                   e.preventDefault();

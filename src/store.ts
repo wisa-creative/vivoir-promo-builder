@@ -59,7 +59,12 @@ export const useStore = create<State>((set) => ({
   addBlock: (type) =>
     set((s) => {
       const block = BLOCKS[type].create();
-      return { blocks: [...s.blocks, block], selectedId: block.id };
+      const next = s.blocks.slice();
+      // 선택된 블록이 있으면 바로 아래에, 없으면 맨 끝에 추가
+      const selIdx = s.selectedId ? s.blocks.findIndex((b) => b.id === s.selectedId) : -1;
+      const at = selIdx >= 0 ? selIdx + 1 : next.length;
+      next.splice(at, 0, block);
+      return { blocks: next, selectedId: block.id };
     }),
   removeBlock: (id) =>
     set((s) => ({

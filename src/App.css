@@ -121,7 +121,17 @@ button { font-family: inherit; cursor: pointer; }
 .block-item:hover { background: var(--bg-tertiary); }
 .block-item.sel { border-color: var(--blue-500); box-shadow: 0 0 0 2px var(--bg-blue-primary); background: var(--bg-primary); }
 .block-item.dragging { opacity: .55; box-shadow: var(--shadow-lg); transform: scale(1.015); }
-.block-item.drag-over { border-color: var(--blue-500); box-shadow: 0 0 0 2px var(--bg-blue-primary); transform: translateY(3px); }
+/* 드래그로 옮길 때 놓을 자리에 공간 + 파란 선이 나오게 */
+.block-item { position: relative; }
+.block-item.drop-before { margin-top: 22px; }
+.block-item.drop-after { margin-bottom: 22px; }
+.block-item.drop-before::before,
+.block-item.drop-after::after {
+  content: ""; position: absolute; left: 0; right: 0; height: 3px;
+  border-radius: 999px; background: var(--blue-500);
+}
+.block-item.drop-before::before { top: -13px; }
+.block-item.drop-after::after { bottom: -13px; }
 .block-item .grip { color: var(--txt-disabled); font-size: 14px; cursor: grab; flex: 0 0 auto; line-height: 1; }
 .block-item:active .grip { cursor: grabbing; }
 .block-item .name { flex: 1; }

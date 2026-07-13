@@ -5,6 +5,7 @@ import { renderPreviewDoc } from "./blocks/render";
 import { buildExportHtml, copyToClipboard, downloadHtml, exportImage } from "./export";
 import { Inspector } from "./components/Inspector";
 import { TemplateModal } from "./components/TemplateModal";
+import { ImportModal } from "./components/ImportModal";
 
 interface EditMsg {
   __promoEdit?: true;
@@ -33,6 +34,7 @@ export function App() {
   const [pvW, setPvW] = useState(430); // 프리뷰 폭(px)
   const [resizing, setResizing] = useState(false);
   const [tplOpen, setTplOpen] = useState(false);
+  const [importOpen, setImportOpen] = useState(false);
   const [exporting, setExporting] = useState(false);
   const scrollRef = useRef(0);
   const resizeRef = useRef<{ startX: number; startW: number; dir: number } | null>(null);
@@ -185,6 +187,9 @@ export function App() {
           </button>
           <button className="btn btn-outline" onClick={() => setTplOpen(true)} title="템플릿으로 저장하거나 불러오기">
             템플릿
+          </button>
+          <button className="btn btn-outline" onClick={() => setImportOpen(true)} title="블록 JSON을 붙여넣어 한 번에 세팅">
+            가져오기
           </button>
           <button
             className="btn btn-outline"
@@ -349,6 +354,7 @@ export function App() {
       </div>
 
       {tplOpen && <TemplateModal onClose={() => setTplOpen(false)} flash={flash} />}
+      {importOpen && <ImportModal onClose={() => setImportOpen(false)} flash={flash} />}
       {toast && <div className="toast">{toast}</div>}
     </div>
   );

@@ -75,7 +75,9 @@ function subOf(ctx?: Ctx): string {
 
 // 파랑 아웃라인 pill
 function pill(text: string, ctx?: Ctx, field?: string): string {
-  return `<span${field ? ea(ctx, field) : ""} style="display:inline-block;border:1px solid ${C.accentBlue};color:${C.accentBlue};font-size:12px;font-weight:700;padding:5px 12px;border-radius:999px;letter-spacing:-0.02em;">${esc(
+  // 섹션 글자색을 지정하면(예: 컬러 배경) 뱃지도 그 색을 따라가 대비를 유지해요.
+  const accent = ctx?.fg && ctx.fg.trim() ? ctx.fg : C.accentBlue;
+  return `<span${field ? ea(ctx, field) : ""} style="display:inline-block;border:1px solid ${accent};color:${accent};font-size:12px;font-weight:700;padding:5px 12px;border-radius:999px;letter-spacing:-0.02em;">${esc(
     text,
   )}</span>`;
 }
@@ -242,7 +244,7 @@ function renderCoupon(d: CouponData, ctx?: Ctx): string {
     .join("");
   const inner = `<div style="text-align:left;">
       ${pill(d.badge, ctx, "badge")}
-      <h2${ea(ctx, "title")} style="margin:14px 0 0;font-size:24px;font-weight:800;color:${inkOf(ctx)};line-height:1.3;white-space:pre-line;">${esc(d.title)}</h2>
+      <h2${ea(ctx, "title")} style="margin:14px 0 0;font-size:24px;font-weight:500;color:${inkOf(ctx)};line-height:1.3;white-space:pre-line;">${esc(d.title)}</h2>
       <p${ea(ctx, "subtitle")} style="margin:12px 0 0;font-size:14px;line-height:1.65;color:${subOf(ctx)};white-space:pre-line;">${esc(d.subtitle)}</p>
     </div>
     <div style="display:flex;flex-direction:column;gap:10px;margin-top:22px;">${rows}</div>
@@ -252,7 +254,7 @@ function renderCoupon(d: CouponData, ctx?: Ctx): string {
 
 function renderHeader(d: HeaderData, ctx?: Ctx): string {
   const inner = `<div style="text-align:center;">
-      <h2${ea(ctx, "title")} style="margin:0;font-size:26px;font-weight:800;color:${inkOf(ctx)};line-height:1.3;white-space:pre-line;">${esc(d.title)}</h2>
+      <h2${ea(ctx, "title")} style="margin:0;font-size:26px;font-weight:500;color:${inkOf(ctx)};line-height:1.3;white-space:pre-line;">${esc(d.title)}</h2>
       <p${ea(ctx, "subtitle")} style="margin:12px 0 0;font-size:14px;line-height:1.6;color:${subOf(ctx)};white-space:pre-line;">${esc(d.subtitle)}</p>
     </div>`;
   return section(inner, C.page, "44px 22px 4px", ctx?.id, ctx);
@@ -261,7 +263,7 @@ function renderHeader(d: HeaderData, ctx?: Ctx): string {
 function renderProduct(d: ProductData, ctx?: Ctx): string {
   const inner = `<div style="text-align:left;">
       ${d.badge ? pill(d.badge, ctx, "badge") : ""}
-      <h2${ea(ctx, "title")} style="margin:${d.badge ? "14px" : "0"} 0 0;font-size:24px;font-weight:800;color:${inkOf(ctx)};line-height:1.3;white-space:pre-line;letter-spacing:-0.02em;">${esc(d.title)}</h2>
+      <h2${ea(ctx, "title")} style="margin:${d.badge ? "14px" : "0"} 0 0;font-size:24px;font-weight:500;color:${inkOf(ctx)};line-height:1.3;white-space:pre-line;letter-spacing:-0.02em;">${esc(d.title)}</h2>
       <p${ea(ctx, "subtitle")} style="margin:12px 0 0;font-size:14px;line-height:1.65;color:${subOf(ctx)};white-space:pre-line;">${esc(d.subtitle)}</p>
     </div>
     <div style="margin-top:20px;">${imageBox(d.imageUrl, d.imageLabel, { ratio: "100%", ctx, labelField: "imageLabel", dropField: "imageUrl" })}</div>
@@ -290,7 +292,7 @@ function renderGrid(d: GridData, ctx?: Ctx): string {
       ${closeTag}`;
     })
     .join("");
-  const inner = `<h2${ea(ctx, "title")} style="margin:0 0 20px;font-size:22px;font-weight:800;color:${inkOf(ctx)};line-height:1.3;white-space:pre-line;">${esc(d.title)}</h2>
+  const inner = `<h2${ea(ctx, "title")} style="margin:0 0 20px;font-size:22px;font-weight:500;color:${inkOf(ctx)};line-height:1.3;white-space:pre-line;">${esc(d.title)}</h2>
     <div style="display:flex;flex-wrap:wrap;gap:12px;">${cells}</div>
     ${ctaButton(d.ctaText, d.ctaLink, "outline", ctx)}`;
   return section(inner, C.page, "40px 22px 44px", ctx?.id, ctx);
@@ -299,7 +301,7 @@ function renderGrid(d: GridData, ctx?: Ctx): string {
 function renderReview(d: ReviewData, ctx?: Ctx): string {
   const inner = `<div style="text-align:left;">
       ${d.badge ? pill(d.badge, ctx, "badge") : ""}
-      <h2${ea(ctx, "title")} style="margin:${d.badge ? "14px" : "0"} 0 0;font-size:24px;font-weight:800;color:${inkOf(ctx)};line-height:1.3;white-space:pre-line;">${esc(d.title)}</h2>
+      <h2${ea(ctx, "title")} style="margin:${d.badge ? "14px" : "0"} 0 0;font-size:24px;font-weight:500;color:${inkOf(ctx)};line-height:1.3;white-space:pre-line;">${esc(d.title)}</h2>
       <p${ea(ctx, "subtitle")} style="margin:12px 0 0;font-size:14px;line-height:1.65;color:${subOf(ctx)};white-space:pre-line;">${esc(d.subtitle)}</p>
     </div>
     <div style="margin-top:20px;">${imageBox(d.bannerUrl, d.bannerLabel, { ratio: "62%", ctx, labelField: "bannerLabel", dropField: "bannerUrl" })}</div>
@@ -312,7 +314,7 @@ function renderFree(d: FreeData, ctx?: Ctx): string {
     d.badge || d.title || d.subtitle || ctx?.edit
       ? `<div style="text-align:left;margin-bottom:${d.items.length ? "20px" : "0"};">
       ${d.badge ? pill(d.badge, ctx, "badge") : ""}
-      <h2${ea(ctx, "title")} style="margin:${d.badge ? "14px" : "0"} 0 0;font-size:24px;font-weight:800;color:${inkOf(ctx)};line-height:1.3;white-space:pre-line;letter-spacing:-0.02em;">${esc(d.title)}</h2>
+      <h2${ea(ctx, "title")} style="margin:${d.badge ? "14px" : "0"} 0 0;font-size:24px;font-weight:500;color:${inkOf(ctx)};line-height:1.3;white-space:pre-line;letter-spacing:-0.02em;">${esc(d.title)}</h2>
       <p${ea(ctx, "subtitle")} style="margin:12px 0 0;font-size:14px;line-height:1.65;color:${subOf(ctx)};white-space:pre-line;">${esc(d.subtitle)}</p>
     </div>`
       : "";

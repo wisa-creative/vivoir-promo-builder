@@ -105,7 +105,7 @@ export function App() {
     };
   }, []);
 
-  // 자동 저장: 블록이 바뀌면 0.6초 뒤 localStorage에 저장하고 시각 기록
+  // 자동 저장: 바뀌면 바로바로 localStorage에 저장하고, 혹시 놓칠까 봐 창을 닫기 전에도 한 번 더 저장해요
   const firstSave = useRef(true);
   useEffect(() => {
     if (firstSave.current) {
@@ -114,9 +114,18 @@ export function App() {
     }
     const t = window.setTimeout(() => {
       if (persistDoc(useStore.getState().blocks)) markSaved();
-    }, 600);
+    }, 150);
     return () => window.clearTimeout(t);
   }, [blocks, markSaved]);
+
+  // 창을 닫거나 새로고침하기 직전에도 마지막 상태를 확실히 저장
+  useEffect(() => {
+    function flush() {
+      persistDoc(useStore.getState().blocks);
+    }
+    window.addEventListener("beforeunload", flush);
+    return () => window.removeEventListener("beforeunload", flush);
+  }, []);
 
   const doc = useMemo(
     () => renderPreviewDoc(blocks, { edit: true, scrollY: scrollRef.current }),

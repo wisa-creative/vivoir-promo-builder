@@ -158,16 +158,13 @@ function section(
 // ---- 블록별 렌더 ----
 
 function renderHero(d: HeroData, ctx?: Ctx): string {
-  return section(
-    `<div style="text-align:center;">
-      <h1${ea(ctx, "title")} style="margin:0;color:${C.white};font-size:34px;font-weight:800;line-height:1.25;letter-spacing:-0.02em;white-space:pre-line;">${esc(d.title)}</h1>
-      <p${ea(ctx, "period")} style="margin:14px 0 0;color:#9AA0A6;font-size:15px;font-weight:500;">${esc(d.period)}</p>
-    </div>`,
-    C.heroBg,
-    "104px 24px",
-    ctx?.id,
-    ctx,
-  );
+  const url = (d.imageUrl ?? "").trim();
+  // 이미지가 있으면 전체 폭 배너, 없으면 편집 프리뷰에서 업로드 박스(내보내기에선 빈 섹션)
+  if (!url && !ctx?.edit) {
+    return section("", C.heroBg, "0", ctx?.id, ctx);
+  }
+  const banner = imageBox(url, "", { ratio: "58%", ctx, dropField: "imageUrl" });
+  return section(banner, C.heroBg, "0", ctx?.id, ctx);
 }
 
 function renderNav(d: NavData, ctx?: Ctx): string {

@@ -30,13 +30,12 @@ export const BLOCKS: Record<BlockType, BlockMeta> = {
     accent: "#1f2937",
     code: "HERO",
     fields: [
-      { key: "title", label: "캠페인명", kind: "textarea", placeholder: "2026 상반기 결산", group: "기본 정보" },
-      { key: "period", label: "기간", kind: "text", placeholder: "07.15 ~ 07.31", group: "기본 정보" },
+      { key: "imageUrl", label: "배너 이미지", kind: "image", group: "배너 이미지" },
     ],
     create: () => ({
       id: newId(),
       type: "hero",
-      data: { title: "2026 상반기 결산", period: "07.15 ~ 07.31" },
+      data: { imageUrl: "" },
     }),
   },
   nav: {

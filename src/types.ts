@@ -9,8 +9,9 @@ export type BlockType =
   | "free";
 
 export interface HeroData {
-  title: string;
-  period: string;
+  imageUrl: string; // 히어로 배너 이미지 (전체 폭)
+  title?: string; // (구버전 호환용, 더 이상 편집·표시 안 함)
+  period?: string;
 }
 export interface NavItem {
   label: string;

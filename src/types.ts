@@ -6,7 +6,8 @@ export type BlockType =
   | "product"
   | "grid"
   | "review"
-  | "free";
+  | "free"
+  | "note";
 
 export interface HeroData {
   imageUrl: string; // 히어로 배너 이미지 (전체 폭)
@@ -35,7 +36,6 @@ export interface CouponData {
   coupons: CouponItem[];
   downloadText: string; // "한 번에 다운받기"
   downloadLink?: string; // '한 번에 다운받기' 버튼 링크 (쿠폰 전체 받기)
-  note: string; // 유의사항 (아코디언)
 }
 // 섹션 구분 헤더 (가운데 큰 제목 + 서브)
 export interface HeaderData {
@@ -53,7 +53,6 @@ export interface ProductData {
   ctaText: string;
   ctaLink: string;
   ctaStyle: "dark" | "outline";
-  note: string;
 }
 export interface GridItem {
   imageUrl: string;
@@ -77,7 +76,6 @@ export interface ReviewData {
   bannerLabel: string;
   ctaText: string;
   ctaLink: string;
-  note: string;
 }
 
 // 자유 섹션: 이미지·글 콘텐츠 블록을 자유롭게 쌓는 범용 섹션
@@ -95,7 +93,12 @@ export interface FreeData {
   ctaText: string;
   ctaLink: string;
   ctaStyle: "dark" | "outline";
-  note: string;
+}
+
+// 유의사항: 어느 블록에도 속하지 않는 독립 아코디언 섹션
+export interface NoteData {
+  title: string; // 접힌 상태에 보이는 제목 (기본 "유의사항")
+  text: string; // 펼치면 나오는 안내 문구
 }
 
 export type BlockData =
@@ -106,7 +109,8 @@ export type BlockData =
   | ProductData
   | GridData
   | ReviewData
-  | FreeData;
+  | FreeData
+  | NoteData;
 
 export interface Block {
   id: string;

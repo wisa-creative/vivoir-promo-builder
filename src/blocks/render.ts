@@ -8,6 +8,7 @@ import type {
   HeaderData,
   HeroData,
   NavData,
+  NoteData,
   ProductData,
   ReviewData,
 } from "../types";
@@ -131,15 +132,6 @@ function ctaButton(
   </div>`;
 }
 
-// 펼쳐진 유의사항 (제품/리뷰)
-function noteBlock(note: string, ctx?: Ctx): string {
-  if ((!note || !note.trim()) && !ctx?.edit) return "";
-  return `<div style="margin-top:22px;">
-    <div style="font-size:14px;font-weight:700;color:${inkOf(ctx)};margin-bottom:8px;">유의사항</div>
-    <div${ea(ctx, "note")} style="font-size:13px;line-height:1.7;color:${subOf(ctx)};min-height:1.7em;white-space:pre-line;">${multiline(note)}</div>
-  </div>`;
-}
-
 // pad 문자열(px 기준)에 위·아래 추가 여백을 더해요
 function padWithExtra(pad: string, extra: number): string {
   if (!extra) return pad;
@@ -168,7 +160,9 @@ function section(
     ? `background-image:url(&quot;${esc(img)}&quot;);background-size:cover;background-position:center;background-repeat:no-repeat;`
     : "";
   const fgCss = ctx?.fg && ctx.fg.trim() ? `color:${ctx.fg};` : "";
-  return `<section${anchor} style="background-color:${finalBg};${bgImgCss}${fgCss}padding:${finalPad};scroll-margin-top:8px;">${inner}</section>`;
+  // 배경(색·이미지)은 화면 좌우 끝까지 꽉 채우고, 콘텐츠는 max-width 컬럼으로 가운데 정렬해요.
+  // → PC 폭에서도 지정한 배경색·이미지는 좌우로 넓어지고, 본문은 폰 폭을 유지.
+  return `<section${anchor} style="background-color:${finalBg};${bgImgCss}${fgCss}scroll-margin-top:8px;"><div style="max-width:${tokens.layout.maxWidth}px;margin:0 auto;padding:${finalPad};box-sizing:border-box;">${inner}</div></section>`;
 }
 
 // ---- 블록별 렌더 ----
@@ -211,7 +205,8 @@ function renderNav(d: NavData, ctx?: Ctx): string {
   }
   const anchor = ctx?.id ? ` id="${esc(ctx.id)}"` : "";
   const navBg = ctx?.bg && ctx.bg.trim() ? ctx.bg : C.white;
-  return `<nav${anchor} style="background:${navBg};border-bottom:1px solid ${C.line};padding:0 8px;overflow-x:auto;white-space:nowrap;-webkit-overflow-scrolling:touch;scrollbar-width:none;-ms-overflow-style:none;">${items}</nav>`;
+  // 배경·구분선은 좌우 끝까지, 탭은 max-width 컬럼 안에서 가로 스크롤
+  return `<nav${anchor} style="background:${navBg};border-bottom:1px solid ${C.line};"><div style="max-width:${tokens.layout.maxWidth}px;margin:0 auto;padding:0 8px;overflow-x:auto;white-space:nowrap;-webkit-overflow-scrolling:touch;scrollbar-width:none;-ms-overflow-style:none;">${items}</div></nav>`;
 }
 
 function renderCoupon(d: CouponData, ctx?: Ctx): string {
@@ -239,11 +234,7 @@ function renderCoupon(d: CouponData, ctx?: Ctx): string {
       <p${ea(ctx, "subtitle")} style="margin:12px 0 0;font-size:14px;line-height:1.65;color:${subOf(ctx)};white-space:pre-line;">${esc(d.subtitle)}</p>
     </div>
     <div style="display:flex;flex-direction:column;gap:10px;margin-top:22px;">${rows}</div>
-    ${ctaButton(d.downloadText, d.downloadLink || "#", "outline", ctx)}
-    <details style="margin-top:20px;text-align:center;">
-      <summary style="cursor:pointer;color:${subOf(ctx)};font-size:14px;">유의사항 ⌄</summary>
-      <div${ea(ctx, "note")} style="margin-top:12px;text-align:left;font-size:13px;line-height:1.7;color:${subOf(ctx)};white-space:pre-line;min-height:1.7em;">${multiline(d.note)}</div>
-    </details>`;
+    ${ctaButton(d.downloadText, d.downloadLink || "#", "outline", ctx)}`;
   return section(inner, C.white, "40px 22px 44px", ctx?.id, ctx);
 }
 
@@ -263,8 +254,7 @@ function renderProduct(d: ProductData, ctx?: Ctx): string {
     </div>
     <div style="margin-top:20px;">${imageBox(d.imageUrl, d.imageLabel, { ratio: "100%", ctx, labelField: "imageLabel", dropField: "imageUrl" })}</div>
     ${priceBlock(d.consumerPrice, d.salePrice, ctx)}
-    ${ctaButton(d.ctaText, d.ctaLink, d.ctaStyle === "outline" ? "outline" : "dark", ctx)}
-    ${noteBlock(d.note, ctx)}`;
+    ${ctaButton(d.ctaText, d.ctaLink, d.ctaStyle === "outline" ? "outline" : "dark", ctx)}`;
   return section(inner, C.page, "20px 22px 44px", ctx?.id, ctx);
 }
 
@@ -301,8 +291,7 @@ function renderReview(d: ReviewData, ctx?: Ctx): string {
       <p${ea(ctx, "subtitle")} style="margin:12px 0 0;font-size:14px;line-height:1.65;color:${subOf(ctx)};white-space:pre-line;">${esc(d.subtitle)}</p>
     </div>
     <div style="margin-top:20px;">${imageBox(d.bannerUrl, d.bannerLabel, { ratio: "62%", ctx, labelField: "bannerLabel", dropField: "bannerUrl" })}</div>
-    ${ctaButton(d.ctaText, d.ctaLink, "dark", ctx)}
-    ${noteBlock(d.note, ctx)}`;
+    ${ctaButton(d.ctaText, d.ctaLink, "dark", ctx)}`;
   return section(inner, C.page, "40px 22px 48px", ctx?.id, ctx);
 }
 
@@ -324,8 +313,19 @@ function renderFree(d: FreeData, ctx?: Ctx): string {
     })
     .join("");
   const cta = d.ctaText && d.ctaText.trim() ? ctaButton(d.ctaText, d.ctaLink, d.ctaStyle === "outline" ? "outline" : "dark", ctx) : "";
-  const inner = `${head}${body}${cta}${noteBlock(d.note, ctx)}`;
+  const inner = `${head}${body}${cta}`;
   return section(inner, C.page, "40px 22px 44px", ctx?.id, ctx);
+}
+
+// 유의사항: 어느 블록에도 속하지 않는 독립 아코디언 섹션
+function renderNote(d: NoteData, ctx?: Ctx): string {
+  const title = (d.title && d.title.trim()) || "유의사항";
+  const caret = `<span class="promo-caret" style="display:inline-flex;flex:none;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span>`;
+  const inner = `<details style="text-align:center;">
+      <summary style="cursor:pointer;color:${subOf(ctx)};font-size:14px;display:inline-flex;align-items:center;gap:6px;list-style:none;"><span${ea(ctx, "title")}>${esc(title)}</span>${caret}</summary>
+      <div${ea(ctx, "text")} style="margin-top:12px;text-align:left;font-size:13px;line-height:1.7;color:${subOf(ctx)};white-space:pre-line;min-height:1.7em;">${multiline(d.text)}</div>
+    </details>`;
+  return section(inner, C.white, "22px 22px", ctx?.id, ctx);
 }
 
 export function renderBlock(block: Block, ctx?: Ctx): string {
@@ -356,6 +356,8 @@ export function renderBlock(block: Block, ctx?: Ctx): string {
       return renderReview(block.data as ReviewData, c);
     case "free":
       return renderFree(block.data as FreeData, c);
+    case "note":
+      return renderNote(block.data as NoteData, c);
     default:
       return "";
   }
@@ -370,8 +372,9 @@ export function renderPageBody(blocks: Block[], opts?: { edit?: boolean }): stri
   // 편집(프리뷰) 모드에서는 scroll-behavior:smooth를 넣지 않아요.
   // 편집할 때마다 iframe이 리로드되며 스크롤을 복원하는데, smooth가 있으면 "위로 갔다 내려오는" 애니메이션이 보여요.
   const scrollBehavior = opts?.edit ? "" : "html{scroll-behavior:smooth;}";
-  return `<div style="font-family:${tokens.font.family};max-width:${tokens.layout.maxWidth}px;margin:0 auto;background:${C.white};color:${C.ink};">
-<style>details>summary{list-style:none;}details>summary::-webkit-details-marker{display:none;}${scrollBehavior}nav::-webkit-scrollbar{display:none;}</style>
+  // 바깥 래퍼는 폭 제한 없이 전체 폭 — 각 섹션이 스스로 배경을 좌우 끝까지 깔고, 콘텐츠만 가운데 정렬해요.
+  return `<div style="font-family:${tokens.font.family};background:${C.white};color:${C.ink};">
+<style>details>summary{list-style:none;}details>summary::-webkit-details-marker{display:none;}.promo-caret{transition:transform .18s ease;}details[open] .promo-caret{transform:rotate(180deg);}${scrollBehavior}nav::-webkit-scrollbar{display:none;}</style>
 ${body}
 </div>`;
 }
@@ -449,6 +452,6 @@ export function renderPreviewDoc(blocks: Block[], opts?: { edit?: boolean; scrol
     : "";
   return `<!doctype html><html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<style>html,body{margin:0;padding:0;background:${C.page};}img{max-width:100%;}details>summary{list-style:none;}details>summary::-webkit-details-marker{display:none;}nav::-webkit-scrollbar{display:none;}${editStyle}</style>
+<style>html,body{margin:0;padding:0;background:${C.page};}img{max-width:100%;}details>summary{list-style:none;}details>summary::-webkit-details-marker{display:none;}.promo-caret{transition:transform .18s ease;}details[open] .promo-caret{transform:rotate(180deg);}nav::-webkit-scrollbar{display:none;}${editStyle}</style>
 </head><body>${body}${script}</body></html>`;
 }

@@ -71,7 +71,6 @@ export const BLOCKS: Record<BlockType, BlockMeta> = {
       { key: "subtitle", label: "서브카피", kind: "textarea", group: "타이틀 / 문구" },
       { key: "downloadText", label: "다운로드 버튼", kind: "text", placeholder: "한 번에 다운받기", group: "다운로드 버튼" },
       { key: "downloadLink", label: "다운로드 버튼 링크", kind: "text", placeholder: "https://… (쿠폰 전체 받기)", group: "다운로드 버튼" },
-      { key: "note", label: "유의사항", kind: "textarea", group: "안내사항" },
     ],
     create: () => ({
       id: newId(),
@@ -89,7 +88,6 @@ export const BLOCKS: Record<BlockType, BlockMeta> = {
         ],
         downloadText: "한 번에 다운받기",
         downloadLink: "",
-        note: "· 쿠폰 유효기간 내 사용분에 한해 적용됩니다.\n· 일부 상품 및 행사 상품은 쿠폰 적용 대상에서 제외됩니다.",
       },
     }),
   },
@@ -129,7 +127,6 @@ export const BLOCKS: Record<BlockType, BlockMeta> = {
       { key: "ctaText", label: "버튼 문구", kind: "text", placeholder: "바로 구매하기", group: "버튼" },
       { key: "ctaLink", label: "버튼 링크", kind: "text", placeholder: "https://...", group: "버튼" },
       { key: "ctaStyle", label: "버튼 스타일", kind: "cta-style", group: "버튼" },
-      { key: "note", label: "유의사항", kind: "textarea", group: "안내사항" },
     ],
     create: () => ({
       id: newId(),
@@ -145,7 +142,6 @@ export const BLOCKS: Record<BlockType, BlockMeta> = {
         ctaText: "바로 구매하기",
         ctaLink: "#",
         ctaStyle: "dark",
-        note: "- 사은품은 수량 소진 시 안내 없이 종료될 수 있습니다.\n- 자사몰 회원에게 주문서 1개당 1회 지급됩니다.",
       },
     }),
   },
@@ -190,7 +186,6 @@ export const BLOCKS: Record<BlockType, BlockMeta> = {
       { key: "bannerLabel", label: "배너 라벨", kind: "text", placeholder: "이벤트 배너", group: "이미지" },
       { key: "ctaText", label: "버튼 문구", kind: "text", placeholder: "리뷰 참여하기", group: "버튼" },
       { key: "ctaLink", label: "버튼 링크", kind: "text", group: "버튼" },
-      { key: "note", label: "유의사항", kind: "textarea", group: "안내사항" },
     ],
     create: () => ({
       id: newId(),
@@ -204,7 +199,6 @@ export const BLOCKS: Record<BlockType, BlockMeta> = {
         bannerLabel: "이벤트 배너",
         ctaText: "리뷰 참여하기",
         ctaLink: "#",
-        note: "- 마사지기 후기 한정, 어댑터 및 베개 커버 등 마사지기가 아닌 제품의 후기는 제외됩니다.\n- 적립금 지급일 : 8월18일 (공지사항을 통해 지급됩니다.)",
       },
     }),
   },
@@ -221,7 +215,6 @@ export const BLOCKS: Record<BlockType, BlockMeta> = {
       { key: "ctaText", label: "버튼 문구", kind: "text", placeholder: "자세히 보기 (비우면 숨김)", group: "버튼 CTA" },
       { key: "ctaLink", label: "버튼 링크", kind: "text", placeholder: "https://...", group: "버튼 CTA" },
       { key: "ctaStyle", label: "버튼 스타일", kind: "cta-style", group: "버튼 CTA" },
-      { key: "note", label: "유의사항", kind: "textarea", group: "안내사항" },
     ],
     create: () => ({
       id: newId(),
@@ -237,7 +230,25 @@ export const BLOCKS: Record<BlockType, BlockMeta> = {
         ctaText: "",
         ctaLink: "#",
         ctaStyle: "dark",
-        note: "",
+      },
+    }),
+  },
+  note: {
+    type: "note",
+    label: "유의사항",
+    icon: "⌄",
+    accent: "#6b7280",
+    code: "NOTE",
+    fields: [
+      { key: "title", label: "제목(접힌 상태)", kind: "text", placeholder: "유의사항", group: "문구" },
+      { key: "text", label: "안내 문구", kind: "textarea", placeholder: "· 안내할 내용을 적어요.", group: "문구" },
+    ],
+    create: () => ({
+      id: newId(),
+      type: "note",
+      data: {
+        title: "유의사항",
+        text: "· 쿠폰 유효기간 내 사용분에 한해 적용됩니다.\n· 일부 상품 및 행사 상품은 적용 대상에서 제외됩니다.",
       },
     }),
   },
@@ -252,4 +263,5 @@ export const blockOrder: BlockType[] = [
   "grid",
   "review",
   "free",
+  "note",
 ];

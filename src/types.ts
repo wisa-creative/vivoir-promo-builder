@@ -55,6 +55,9 @@ export interface ProductData {
   ctaText: string;
   ctaLink: string;
   ctaStyle: "dark" | "outline";
+  ctaShow?: boolean; // false = 버튼 숨김. 기본 노출.
+  ctaBg?: string; // 버튼 색상(채움색/외곽선색). 비우면 기본.
+  ctaFg?: string; // 버튼 글씨색. 비우면 기본.
 }
 export interface GridItem {
   imageUrl: string;
@@ -69,6 +72,10 @@ export interface GridData {
   items: GridItem[];
   ctaText: string;
   ctaLink: string;
+  ctaStyle?: "dark" | "outline";
+  ctaShow?: boolean;
+  ctaBg?: string;
+  ctaFg?: string;
 }
 export interface ReviewData {
   badge: string;
@@ -78,6 +85,10 @@ export interface ReviewData {
   bannerLabel: string;
   ctaText: string;
   ctaLink: string;
+  ctaStyle?: "dark" | "outline";
+  ctaShow?: boolean;
+  ctaBg?: string;
+  ctaFg?: string;
 }
 
 // 자유 섹션: 이미지·글 콘텐츠 블록을 자유롭게 쌓는 범용 섹션
@@ -95,6 +106,9 @@ export interface FreeData {
   ctaText: string;
   ctaLink: string;
   ctaStyle: "dark" | "outline";
+  ctaShow?: boolean;
+  ctaBg?: string;
+  ctaFg?: string;
 }
 
 // 유의사항: 어느 블록에도 속하지 않는 독립 아코디언 섹션

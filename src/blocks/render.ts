@@ -124,11 +124,14 @@ function ctaButton(
   link: string,
   style: "dark" | "outline",
   ctx?: Ctx,
+  bg?: string,
+  fg?: string,
 ): string {
+  const accent = bg && bg.trim() ? bg : C.cta; // 채움색/외곽선색
   const s =
     style === "outline"
-      ? `background:${C.white};color:${inkOf(ctx)};border:1.5px solid ${C.cta};`
-      : `background:${C.cta};color:${C.ctaText};border:1.5px solid ${C.cta};`;
+      ? `background:${C.white};color:${fg && fg.trim() ? fg : inkOf(ctx)};border:1.5px solid ${accent};`
+      : `background:${accent};color:${fg && fg.trim() ? fg : C.ctaText};border:1.5px solid ${accent};`;
   return `<div style="margin-top:22px;">
     <a href="${esc(link || "#")}" style="display:block;width:100%;box-sizing:border-box;text-align:center;${s}font-size:16px;font-weight:700;text-decoration:none;padding:16px 0;border-radius:8px;"><span${ea(ctx, "ctaText")}>${esc(text)}</span></a>
   </div>`;
@@ -268,7 +271,7 @@ function renderProduct(d: ProductData, ctx?: Ctx): string {
     </div>
     <div style="margin-top:20px;">${imageBox(d.imageUrl, d.imageLabel, { ratio: "100%", ctx, labelField: "imageLabel", dropField: "imageUrl" })}</div>
     ${priceBlock(d.consumerPrice, d.salePrice, ctx)}
-    ${ctaButton(d.ctaText, d.ctaLink, d.ctaStyle === "outline" ? "outline" : "dark", ctx)}`;
+    ${d.ctaShow === false ? "" : ctaButton(d.ctaText, d.ctaLink, d.ctaStyle === "outline" ? "outline" : "dark", ctx, d.ctaBg, d.ctaFg)}`;
   return section(inner, C.page, "20px 22px 44px", ctx?.id, ctx);
 }
 
@@ -294,7 +297,7 @@ function renderGrid(d: GridData, ctx?: Ctx): string {
     .join("");
   const inner = `<h2${ea(ctx, "title")} style="margin:0 0 20px;font-size:22px;font-weight:500;color:${inkOf(ctx)};line-height:1.3;white-space:pre-line;">${esc(d.title)}</h2>
     <div style="display:flex;flex-wrap:wrap;gap:12px;">${cells}</div>
-    ${ctaButton(d.ctaText, d.ctaLink, "outline", ctx)}`;
+    ${d.ctaShow === false ? "" : ctaButton(d.ctaText, d.ctaLink, d.ctaStyle === "dark" ? "dark" : "outline", ctx, d.ctaBg, d.ctaFg)}`;
   return section(inner, C.page, "40px 22px 44px", ctx?.id, ctx);
 }
 
@@ -305,7 +308,7 @@ function renderReview(d: ReviewData, ctx?: Ctx): string {
       <p${ea(ctx, "subtitle")} style="margin:12px 0 0;font-size:14px;line-height:1.65;color:${subOf(ctx)};white-space:pre-line;">${esc(d.subtitle)}</p>
     </div>
     <div style="margin-top:20px;">${imageBox(d.bannerUrl, d.bannerLabel, { ratio: "62%", ctx, labelField: "bannerLabel", dropField: "bannerUrl" })}</div>
-    ${ctaButton(d.ctaText, d.ctaLink, "dark", ctx)}`;
+    ${d.ctaShow === false ? "" : ctaButton(d.ctaText, d.ctaLink, d.ctaStyle === "outline" ? "outline" : "dark", ctx, d.ctaBg, d.ctaFg)}`;
   return section(inner, C.page, "40px 22px 48px", ctx?.id, ctx);
 }
 
@@ -326,7 +329,10 @@ function renderFree(d: FreeData, ctx?: Ctx): string {
       return `<div${ea(ctx, "items", { index: i, subfield: "text" })} style="margin:${i ? "14px" : "0"} 0 0;font-size:15px;line-height:1.7;color:${inkOf(ctx)};white-space:pre-line;min-height:1.5em;">${multiline(it.text ?? "")}</div>`;
     })
     .join("");
-  const cta = d.ctaText && d.ctaText.trim() ? ctaButton(d.ctaText, d.ctaLink, d.ctaStyle === "outline" ? "outline" : "dark", ctx) : "";
+  const cta =
+    d.ctaShow !== false && d.ctaText && d.ctaText.trim()
+      ? ctaButton(d.ctaText, d.ctaLink, d.ctaStyle === "outline" ? "outline" : "dark", ctx, d.ctaBg, d.ctaFg)
+      : "";
   const inner = `${head}${body}${cta}`;
   return section(inner, C.page, "40px 22px 44px", ctx?.id, ctx);
 }

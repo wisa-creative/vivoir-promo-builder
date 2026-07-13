@@ -157,6 +157,7 @@ export const BLOCKS: Record<BlockType, BlockMeta> = {
       { key: "title", label: "섹션 제목", kind: "textarea", placeholder: "함께하면 더 좋은\n소모품 & 악세서리", group: "타이틀" },
       { key: "ctaText", label: "버튼 문구", kind: "text", placeholder: "바로 구매하기", group: "버튼" },
       { key: "ctaLink", label: "버튼 링크", kind: "text", placeholder: "https://...", group: "버튼" },
+      { key: "ctaStyle", label: "버튼 스타일", kind: "cta-style", group: "버튼" },
     ],
     create: () => ({
       id: newId(),
@@ -171,6 +172,7 @@ export const BLOCKS: Record<BlockType, BlockMeta> = {
         ],
         ctaText: "바로 구매하기",
         ctaLink: "#",
+        ctaStyle: "outline",
       },
     }),
   },
@@ -188,6 +190,7 @@ export const BLOCKS: Record<BlockType, BlockMeta> = {
       { key: "bannerLabel", label: "배너 라벨", kind: "text", placeholder: "이벤트 배너", group: "이미지" },
       { key: "ctaText", label: "버튼 문구", kind: "text", placeholder: "리뷰 참여하기", group: "버튼" },
       { key: "ctaLink", label: "버튼 링크", kind: "text", group: "버튼" },
+      { key: "ctaStyle", label: "버튼 스타일", kind: "cta-style", group: "버튼" },
     ],
     create: () => ({
       id: newId(),
@@ -201,6 +204,7 @@ export const BLOCKS: Record<BlockType, BlockMeta> = {
         bannerLabel: "이벤트 배너",
         ctaText: "리뷰 참여하기",
         ctaLink: "#",
+        ctaStyle: "dark",
       },
     }),
   },

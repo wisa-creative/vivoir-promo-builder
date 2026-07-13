@@ -119,6 +119,42 @@ function Group({
 }
 
 // 스칼라 필드 하나 렌더
+// 색상 한 줄(칩 + 텍스트 + 지우기). 여러 곳에서 재사용해요.
+function ColorField({
+  label,
+  value,
+  dft,
+  onChange,
+  onClear,
+}: {
+  label: string;
+  value: string;
+  dft: string;
+  onChange: (v: string) => void;
+  onClear: () => void;
+}) {
+  const shown = value.trim() || dft;
+  return (
+    <label className="field">
+      <span>{label}</span>
+      <div className="color-row">
+        <input
+          type="color"
+          className="color-chip"
+          value={/^#[0-9a-fA-F]{6}$/.test(shown) ? shown : dft}
+          onChange={(e) => onChange(e.target.value)}
+        />
+        <input type="text" value={shown} onChange={(e) => onChange(e.target.value)} />
+        {value.trim() && (
+          <button className="mini-clear" title="기본값으로" onClick={onClear}>
+            ✕
+          </button>
+        )}
+      </div>
+    </label>
+  );
+}
+
 function FieldRow({ block, f }: { block: Block; f: Field }) {
   const update = useStore((s) => s.updateData);
   const data = block.data as unknown as Record<string, unknown>;
@@ -138,21 +174,55 @@ function FieldRow({ block, f }: { block: Block; f: Field }) {
     );
   }
   if (f.kind === "cta-style") {
+    const show = data.ctaShow !== false; // 기본 노출
+    const style = (data.ctaStyle as string) || "dark";
+    const ctaBg = (data.ctaBg as string) ?? "";
+    const ctaFg = (data.ctaFg as string) ?? "";
     return (
-      <label className="field">
-        <span>{f.label}</span>
-        <div className="seg">
-          {(["dark", "outline"] as const).map((opt) => (
-            <button
-              key={opt}
-              className={"seg-btn" + (val === opt ? " on" : "")}
-              onClick={() => update(block.id, { [f.key]: opt })}
-            >
-              {opt === "dark" ? "채움(다크)" : "외곽선"}
-            </button>
-          ))}
+      <>
+        <div className="field-row-inline">
+          <span className="field-inline-label">버튼 노출</span>
+          <button
+            className={"onoff" + (show ? " on" : "")}
+            onClick={() => update(block.id, { ctaShow: !show })}
+          >
+            <span className="onoff-knob" />
+            <span className="onoff-text">{show ? "ON" : "OFF"}</span>
+          </button>
         </div>
-      </label>
+        {show && (
+          <>
+            <label className="field">
+              <span>{f.label}</span>
+              <div className="seg">
+                {(["dark", "outline"] as const).map((opt) => (
+                  <button
+                    key={opt}
+                    className={"seg-btn" + (style === opt ? " on" : "")}
+                    onClick={() => update(block.id, { ctaStyle: opt })}
+                  >
+                    {opt === "dark" ? "채움(다크)" : "외곽선"}
+                  </button>
+                ))}
+              </div>
+            </label>
+            <ColorField
+              label={style === "outline" ? "버튼 선/글씨 색" : "버튼 색상"}
+              value={ctaBg}
+              dft={style === "outline" ? "#14161C" : "#14161C"}
+              onChange={(v) => update(block.id, { ctaBg: v })}
+              onClear={() => update(block.id, { ctaBg: "" })}
+            />
+            <ColorField
+              label="버튼 글씨색"
+              value={ctaFg}
+              dft={style === "outline" ? "#14161C" : "#ffffff"}
+              onChange={(v) => update(block.id, { ctaFg: v })}
+              onClear={() => update(block.id, { ctaFg: "" })}
+            />
+          </>
+        )}
+      </>
     );
   }
   if (f.kind === "image") {

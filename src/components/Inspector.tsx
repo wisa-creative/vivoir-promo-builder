@@ -453,7 +453,7 @@ function NavEditor({ block }: { block: Block }) {
               <div className="nav-auto-tags">
                 {autoSecs.map((b) => (
                   <span className="nav-auto-tag" key={b.id}>
-                    {(b.navLabel && b.navLabel.trim()) || BLOCKS[b.type].label}
+                    {(b.navLabel && b.navLabel.trim()) || b.name || BLOCKS[b.type].label}
                   </span>
                 ))}
               </div>
@@ -480,9 +480,9 @@ function NavEditor({ block }: { block: Block }) {
             onChange={(v) => patch(i, { target: v })}
             options={[
               { value: "", label: "이동 안 함" },
-              ...targets.map((b, k) => ({
+              ...targets.map((b) => ({
                 value: b.id,
-                label: `${k + 1}. ${BLOCKS[b.type].label}`,
+                label: `${blocks.findIndex((x) => x.id === b.id) + 1}. ${b.name || BLOCKS[b.type].label}`,
               })),
             ]}
           />

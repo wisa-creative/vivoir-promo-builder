@@ -189,7 +189,7 @@ function renderNav(d: NavData, ctx?: Ctx): string {
     items = secs
       .map((b, i) => {
         const active = i === 0;
-        const label = (b.navLabel && b.navLabel.trim()) || BLOCKS[b.type].label;
+        const label = (b.navLabel && b.navLabel.trim()) || b.name || BLOCKS[b.type].label;
         return `<a href="#${esc(b.id)}" style="display:inline-block;padding:15px 13px;font-size:14px;font-weight:${active ? 700 : 600};text-decoration:none;color:${active ? C.ink : C.inkSub};border-bottom:2px solid ${active ? C.ink : "transparent"};letter-spacing:-0.02em;">${esc(label)}</a>`;
       })
       .join("");

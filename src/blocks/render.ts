@@ -138,16 +138,19 @@ function ctaButton(
   </div>`;
 }
 
-// pad 문자열(px 기준)에 위·아래 추가 여백을 더해요
+// pad 문자열(px 기준)에 위·아래 추가 여백(space)을 더해요.
+// 단, 블록 하단 여백은 항상 20px로 통일 — 블록마다 20px만 아래로 띄워 리듬을 맞춰요.
+const BLOCK_BOTTOM_PAD = 20;
 function padWithExtra(pad: string, extra: number): string {
-  if (!extra) return pad;
   const p = pad.trim().split(/\s+/).map((x) => parseInt(x, 10) || 0);
-  let t: number, r: number, b: number, l: number;
-  if (p.length === 1) [t, r, b, l] = [p[0], p[0], p[0], p[0]];
-  else if (p.length === 2) [t, r, b, l] = [p[0], p[1], p[0], p[1]];
-  else if (p.length === 3) [t, r, b, l] = [p[0], p[1], p[2], p[1]];
-  else [t, r, b, l] = [p[0], p[1], p[2], p[3]];
-  return `${Math.max(0, t + extra)}px ${r}px ${Math.max(0, b + extra)}px ${l}px`;
+  let t: number, r: number, l: number;
+  if (p.length === 1) [t, r, l] = [p[0], p[0], p[0]];
+  else if (p.length === 2) [t, r, l] = [p[0], p[1], p[1]];
+  else if (p.length === 3) [t, r, l] = [p[0], p[1], p[1]];
+  else [t, r, l] = [p[0], p[1], p[3]];
+  const top = Math.max(0, t + extra);
+  const bottom = Math.max(0, BLOCK_BOTTOM_PAD + extra);
+  return `${top}px ${r}px ${bottom}px ${l}px`;
 }
 
 function section(

@@ -252,7 +252,7 @@ function renderCoupon(d: CouponData, ctx?: Ctx): string {
     </div>
     <div style="display:flex;flex-direction:column;gap:10px;margin-top:22px;">${rows}</div>
     ${downloadButton(d, ctx)}`;
-  return section(inner, C.white, "40px 22px 44px", ctx?.id, ctx);
+  return section(inner, C.white, "60px 22px", ctx?.id, ctx);
 }
 
 function renderHeader(d: HeaderData, ctx?: Ctx): string {
@@ -260,7 +260,7 @@ function renderHeader(d: HeaderData, ctx?: Ctx): string {
       <h2${ea(ctx, "title")} style="margin:0;font-size:26px;font-weight:500;color:${inkOf(ctx)};line-height:1.3;white-space:pre-line;">${esc(d.title)}</h2>
       <p${ea(ctx, "subtitle")} style="margin:12px 0 0;font-size:14px;line-height:1.6;color:${subOf(ctx)};white-space:pre-line;">${esc(d.subtitle)}</p>
     </div>`;
-  return section(inner, C.page, "44px 22px 4px", ctx?.id, ctx);
+  return section(inner, C.page, "60px 22px", ctx?.id, ctx);
 }
 
 function renderProduct(d: ProductData, ctx?: Ctx): string {
@@ -272,7 +272,7 @@ function renderProduct(d: ProductData, ctx?: Ctx): string {
     <div style="margin-top:20px;">${imageBox(d.imageUrl, d.imageLabel, { ratio: "100%", ctx, labelField: "imageLabel", dropField: "imageUrl" })}</div>
     ${priceBlock(d.consumerPrice, d.salePrice, ctx)}
     ${d.ctaShow === false ? "" : ctaButton(d.ctaText, d.ctaLink, d.ctaStyle === "outline" ? "outline" : "dark", ctx, d.ctaBg, d.ctaFg)}`;
-  return section(inner, C.page, "20px 22px 44px", ctx?.id, ctx);
+  return section(inner, C.page, "60px 22px", ctx?.id, ctx);
 }
 
 function renderGrid(d: GridData, ctx?: Ctx): string {
@@ -298,7 +298,7 @@ function renderGrid(d: GridData, ctx?: Ctx): string {
   const inner = `<h2${ea(ctx, "title")} style="margin:0 0 20px;font-size:22px;font-weight:500;color:${inkOf(ctx)};line-height:1.3;white-space:pre-line;">${esc(d.title)}</h2>
     <div style="display:flex;flex-wrap:wrap;gap:12px;">${cells}</div>
     ${d.ctaShow === false ? "" : ctaButton(d.ctaText, d.ctaLink, d.ctaStyle === "dark" ? "dark" : "outline", ctx, d.ctaBg, d.ctaFg)}`;
-  return section(inner, C.page, "40px 22px 44px", ctx?.id, ctx);
+  return section(inner, C.page, "60px 22px", ctx?.id, ctx);
 }
 
 function renderReview(d: ReviewData, ctx?: Ctx): string {
@@ -309,7 +309,7 @@ function renderReview(d: ReviewData, ctx?: Ctx): string {
     </div>
     <div style="margin-top:20px;">${imageBox(d.bannerUrl, d.bannerLabel, { ratio: "62%", ctx, labelField: "bannerLabel", dropField: "bannerUrl" })}</div>
     ${d.ctaShow === false ? "" : ctaButton(d.ctaText, d.ctaLink, d.ctaStyle === "outline" ? "outline" : "dark", ctx, d.ctaBg, d.ctaFg)}`;
-  return section(inner, C.page, "40px 22px 48px", ctx?.id, ctx);
+  return section(inner, C.page, "60px 22px", ctx?.id, ctx);
 }
 
 function renderFree(d: FreeData, ctx?: Ctx): string {
@@ -334,7 +334,7 @@ function renderFree(d: FreeData, ctx?: Ctx): string {
       ? ctaButton(d.ctaText, d.ctaLink, d.ctaStyle === "outline" ? "outline" : "dark", ctx, d.ctaBg, d.ctaFg)
       : "";
   const inner = `${head}${body}${cta}`;
-  return section(inner, C.page, "40px 22px 44px", ctx?.id, ctx);
+  return section(inner, C.page, "60px 22px", ctx?.id, ctx);
 }
 
 // 유의사항: 어느 블록에도 속하지 않는 독립 아코디언 섹션

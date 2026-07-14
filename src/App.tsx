@@ -51,6 +51,8 @@ export function App() {
   const [tplOpen, setTplOpen] = useState(false);
   const [importOpen, setImportOpen] = useState(false);
   const [exporting, setExporting] = useState(false);
+  const [moreOpen, setMoreOpen] = useState(false);
+  const moreRef = useRef<HTMLDivElement>(null);
   const scrollRef = useRef(0);
   const resizeRef = useRef<{ startX: number; startW: number; dir: number } | null>(null);
   const iframeRef = useRef<HTMLIFrameElement>(null);
@@ -142,6 +144,16 @@ export function App() {
     return () => window.removeEventListener("beforeunload", flush);
   }, []);
 
+  // 상단 '더보기' 메뉴 바깥을 누르면 닫기
+  useEffect(() => {
+    if (!moreOpen) return;
+    function onDown(e: MouseEvent) {
+      if (moreRef.current && !moreRef.current.contains(e.target as Node)) setMoreOpen(false);
+    }
+    window.addEventListener("mousedown", onDown);
+    return () => window.removeEventListener("mousedown", onDown);
+  }, [moreOpen]);
+
   const doc = useMemo(
     () => renderPreviewDoc(blocks, { edit: true, scrollY: scrollRef.current }),
     [blocks],
@@ -208,32 +220,50 @@ export function App() {
           </span>
         </div>
         <div className="top-actions">
-          <span className="save-ind" title="변경하면 자동으로 저장돼요">{savedLabel}</span>
-          <button className="btn btn-outline" onClick={onReset} title="처음 상태로 되돌리기">
-            새로 시작
-          </button>
-          <button className="btn btn-outline" onClick={() => setTplOpen(true)} title="템플릿으로 저장하거나 불러오기">
-            템플릿
-          </button>
-          <button className="btn btn-outline" onClick={() => setImportOpen(true)} title="블록 JSON을 붙여넣어 한 번에 세팅">
-            가져오기
-          </button>
-          <button
-            className="btn btn-outline"
-            onClick={onExportImage}
-            disabled={exporting}
-            title="미리보기를 이미지 파일로 저장"
-          >
-            {exporting ? "만드는 중…" : "이미지 저장"}
-          </button>
-          <button className="btn btn-outline" onClick={onCopy}>
-            HTML 복사하기
+          <span className="save-ind" title="변경하면 자동으로 저장돼요">
+            <span className="save-dot" /> {savedLabel}
+          </span>
+          <div className="more-wrap" ref={moreRef}>
+            <button
+              className={"btn btn-outline btn-icon" + (moreOpen ? " on" : "")}
+              onClick={() => setMoreOpen((o) => !o)}
+              title="더보기"
+              aria-label="더보기"
+            >
+              ⋯
+            </button>
+            {moreOpen && (
+              <div className="more-menu">
+                <button onClick={() => { setTplOpen(true); setMoreOpen(false); }}>
+                  템플릿 저장·불러오기
+                </button>
+                <button onClick={() => { setImportOpen(true); setMoreOpen(false); }}>
+                  블록 JSON 가져오기
+                </button>
+                <button
+                  disabled={exporting}
+                  onClick={() => { onExportImage(); setMoreOpen(false); }}
+                >
+                  {exporting ? "이미지 만드는 중…" : "이미지로 저장"}
+                </button>
+                <div className="more-sep" />
+                <button
+                  className="danger"
+                  onClick={() => { onReset(); setMoreOpen(false); }}
+                >
+                  처음 상태로 되돌리기
+                </button>
+              </div>
+            )}
+          </div>
+          <button className="btn btn-outline" onClick={onCopy} title="내보내기용 HTML을 클립보드에 복사">
+            HTML 복사
           </button>
           <button
             className="btn btn-primary"
             onClick={() => downloadHtml(buildExportHtml(blocks))}
           >
-            Cafe24 HTML 내보내기
+            Cafe24로 내보내기
           </button>
           <button
             className="theme-toggle"
@@ -313,24 +343,36 @@ export function App() {
                   </span>
                 )}
                 <button
-                  className={"onoff sm" + (b.enabled !== false ? " on" : "")}
-                  title={b.enabled !== false ? "섹션 끄기" : "섹션 켜기"}
+                  className={"row-ic vis" + (b.enabled !== false ? "" : " off")}
+                  title={b.enabled !== false ? "섹션 숨기기" : "섹션 보이기"}
                   onClick={(e) => {
                     e.stopPropagation();
                     toggleEnabled(b.id);
                   }}
                 >
-                  <span className="onoff-knob" />
+                  {b.enabled !== false ? (
+                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z" />
+                      <circle cx="12" cy="12" r="3" />
+                    </svg>
+                  ) : (
+                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M9.9 4.24A9.1 9.1 0 0 1 12 4c6.5 0 10 7 10 7a13.2 13.2 0 0 1-1.67 2.44M6.6 6.6C3.9 8.3 2 12 2 12s3.5 7 10 7a9 9 0 0 0 5.4-1.6" />
+                      <path d="M3 3l18 18" />
+                    </svg>
+                  )}
                 </button>
                 <button
-                  className="del"
+                  className="row-ic del"
                   title="블록 지우기"
                   onClick={(e) => {
                     e.stopPropagation();
                     removeBlock(b.id);
                   }}
                 >
-                  ✕
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14" />
+                  </svg>
                 </button>
               </div>
             ))}
@@ -339,6 +381,7 @@ export function App() {
           <div className="add-grid">
             {blockOrder.map((t) => (
               <button key={t} className="add-btn" onClick={() => addBlock(t)}>
+                <span className="add-btn-ic" style={{ color: BLOCKS[t].accent }}>{BLOCKS[t].icon}</span>
                 {BLOCKS[t].label}
               </button>
             ))}

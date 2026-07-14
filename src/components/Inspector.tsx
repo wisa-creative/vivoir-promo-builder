@@ -451,9 +451,25 @@ export function Inspector({ block }: { block: Block }) {
           <ImageUploader
             value={block.bgImage ?? ""}
             onChange={(url) => setBlockMeta(block.id, { bgImage: url })}
-            hint="본문 폭(420px)에 맞춰 표시돼요. 권장 폭 840px 이상 · JPG·PNG"
+            hint={
+              block.bgImageFull
+                ? "화면 전체 폭으로 깔려요. 가로로 넓고 가운데가 안전한 이미지 권장 (폭 1600px 이상 · JPG·PNG)"
+                : "본문 폭(420px)에 맞춰 표시돼요. 권장 폭 840px 이상 · JPG·PNG"
+            }
           />
         </label>
+        {(block.bgImage ?? "").trim() !== "" && (
+          <div className="field-row-inline">
+            <span className="field-inline-label">배경 이미지 화면 전체 폭</span>
+            <button
+              className={"onoff" + (block.bgImageFull ? " on" : "")}
+              onClick={() => setBlockMeta(block.id, { bgImageFull: !block.bgImageFull })}
+            >
+              <span className="onoff-knob" />
+              <span className="onoff-text">{block.bgImageFull ? "ON" : "OFF"}</span>
+            </button>
+          </div>
+        )}
         {block.type !== "nav" && (
           <>
             <div className="field-row-inline">

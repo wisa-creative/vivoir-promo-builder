@@ -137,6 +137,7 @@ export interface Block {
   space?: number; // 섹션 위·아래 추가 여백(px). 기본 0.
   bg?: string; // 섹션 배경색 덮어쓰기(빈 값 = 기본).
   bgImage?: string; // 섹션 배경 이미지(URL 또는 data URL, 빈 값 = 없음).
+  bgImageFull?: boolean; // true = 배경 이미지를 화면 전체 폭(풀블리드)으로. 기본 false = 본문 폭(420px) 컬럼에 맞춤.
   fg?: string; // 섹션 글자색 덮어쓰기(빈 값 = 기본 텍스트색). 뱃지·가격·버튼 등 강조색은 유지.
   navShow?: boolean; // true = 내비 자동 구성에서 이 섹션을 탭으로 노출.
   navLabel?: string; // 자동 내비 탭 이름(비면 섹션 라벨 사용).

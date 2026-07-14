@@ -23,6 +23,7 @@ interface Ctx {
   space?: number; // 섹션 위·아래 추가 여백(px)
   bg?: string; // 섹션 배경색 덮어쓰기
   bgImage?: string; // 섹션 배경 이미지
+  bgImageFull?: boolean; // 배경 이미지를 화면 전체 폭으로 (기본: 본문 폭 컬럼)
   fg?: string; // 섹션 글자색 덮어쓰기
   allBlocks?: Block[]; // 자동 내비 구성을 위한 전체 블록 목록
 }
@@ -160,14 +161,19 @@ function section(
   const finalBg = ctx?.bg && ctx.bg.trim() ? ctx.bg : bg;
   const finalPad = padWithExtra(pad, ctx?.space ?? 0);
   const img = (ctx?.bgImage ?? "").trim();
-  // 배경 이미지는 본문 폭(maxWidth) 컬럼에만 깐다 → PC·모바일 모두 같은 폭에서
-  // 같은 비율로 스케일되어 기기별로 다르게 잘리지 않아요. (배경'색'만 좌우 풀블리드)
+  // 기본: 배경 이미지를 본문 폭(maxWidth) 컬럼에만 깐다 → PC·모바일 모두 같은 폭에서
+  // 같은 비율로 스케일되어 기기별로 다르게 잘리지 않아요. (배경'색'은 항상 좌우 풀블리드)
+  // bgImageFull=true: 이미지를 화면 전체 폭(<section>)에 깐다 → PC에서 좌우까지 꽉 차지만
+  // 기기 폭에 따라 크롭 위치가 달라질 수 있어요(가로로 넓고 가운데가 안전한 이미지 권장).
+  const full = !!ctx?.bgImageFull;
   const bgImgCss = img
     ? `background-image:url(&quot;${esc(img)}&quot;);background-size:cover;background-position:center;background-repeat:no-repeat;`
     : "";
   const fgCss = ctx?.fg && ctx.fg.trim() ? `color:${ctx.fg};` : "";
-  // 배경색은 화면 좌우 끝까지 꽉 채우고, 콘텐츠(와 배경 이미지)는 max-width 컬럼으로 가운데 정렬.
-  return `<section${anchor} style="background-color:${finalBg};${fgCss}scroll-margin-top:8px;"><div style="max-width:${tokens.layout.maxWidth}px;margin:0 auto;padding:${finalPad};box-sizing:border-box;${bgImgCss}">${inner}</div></section>`;
+  const sectionBgImg = full ? bgImgCss : "";
+  const innerBgImg = full ? "" : bgImgCss;
+  // 배경색은 화면 좌우 끝까지 꽉 채우고, 콘텐츠는 max-width 컬럼으로 가운데 정렬.
+  return `<section${anchor} style="background-color:${finalBg};${sectionBgImg}${fgCss}scroll-margin-top:8px;"><div style="max-width:${tokens.layout.maxWidth}px;margin:0 auto;padding:${finalPad};box-sizing:border-box;${innerBgImg}">${inner}</div></section>`;
 }
 
 // ---- 블록별 렌더 ----
@@ -356,6 +362,7 @@ export function renderBlock(block: Block, ctx?: Ctx): string {
     space: block.space,
     bg: block.bg,
     bgImage: block.bgImage,
+    bgImageFull: block.bgImageFull,
     fg: block.fg,
     allBlocks: ctx?.allBlocks,
   };

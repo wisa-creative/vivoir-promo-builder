@@ -140,7 +140,7 @@ function ColorField({
 }) {
   const shown = value.trim() || dft;
   return (
-    <label className="field">
+    <label className="field field-color">
       <span>{label}</span>
       <div className="color-row">
         <input
@@ -247,7 +247,7 @@ function FieldRow({ block, f }: { block: Block; f: Field }) {
     const dft = f.key.toLowerCase().includes("fg") ? "#000000" : "#ffffff";
     const shown = val.trim() || dft;
     return (
-      <label className="field">
+      <label className="field field-color">
         <span>{f.label}</span>
         <div className="color-row">
           <input
@@ -398,7 +398,7 @@ export function Inspector({ block }: { block: Block }) {
             onChange={(v) => setBlockMeta(block.id, { space: parseInt(v, 10) })}
           />
         </label>
-        <label className="field">
+        <label className="field field-color">
           <span>섹션 배경색</span>
           <div className="color-row">
             <input
@@ -423,7 +423,7 @@ export function Inspector({ block }: { block: Block }) {
             )}
           </div>
         </label>
-        <label className="field">
+        <label className="field field-color">
           <span>글자색</span>
           <div className="color-row">
             <input

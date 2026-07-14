@@ -234,11 +234,13 @@ button { font-family: inherit; cursor: pointer; }
 .insp-group:first-of-type { border-top: 0; }
 .insp-group-head {
   display: flex; align-items: center; gap: 8px; width: 100%; border: 0; background: transparent;
-  padding: 15px 2px; cursor: pointer; font-family: inherit; text-align: left;
+  /* 위(이전 그룹과 벌림) 크게, 아래(자기 내용과 붙임) 작게 = 근접성으로 묶어 보이게 */
+  padding: 20px 2px 9px; cursor: pointer; font-family: inherit; text-align: left;
   transition: opacity var(--dur-fast) var(--ease);
 }
+.insp-group:first-of-type .insp-group-head { padding-top: 8px; }
 .insp-group-head:hover { opacity: .72; }
-.insp-group-title { flex: 1; font-size: 13px; font-weight: 700; color: var(--txt-primary); letter-spacing: -.01em; }
+.insp-group-title { flex: 1; font-size: 14px; font-weight: 800; color: var(--txt-primary); letter-spacing: -.01em; }
 .insp-group-meta { font-size: 12px; font-weight: 600; color: var(--txt-tertiary); }
 .insp-group-caret {
   flex: 0 0 auto; width: 7px; height: 7px; border-right: 1.6px solid var(--txt-tertiary);
@@ -246,11 +248,12 @@ button { font-family: inherit; cursor: pointer; }
   transition: transform var(--dur-base) var(--ease);
 }
 .insp-group.open .insp-group-caret { transform: rotate(-135deg); }
-.insp-group-body { padding: 2px 2px 16px; animation: cs-pop var(--dur-base) var(--ease); }
+.insp-group-body { padding: 0 2px 4px; animation: cs-pop var(--dur-base) var(--ease); }
 
 /* ON/OFF 토글 */
-.field-row-inline { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
-.field-inline-label { font-size: 13px; font-weight: 600; color: var(--txt-secondary); }
+.field-row-inline { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.field-row-inline:last-child { margin-bottom: 0; }
+.field-inline-label { font-size: 12.5px; font-weight: 600; color: var(--txt-tertiary); }
 .onoff {
   display: inline-flex; align-items: center; gap: 6px; border: 0; cursor: pointer;
   width: 62px; height: 28px; border-radius: 999px; background: var(--bg-tertiary); position: relative;
@@ -280,8 +283,9 @@ button { font-family: inherit; cursor: pointer; }
 /* 상단 자동저장 표시 */
 .save-ind { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; color: var(--txt-tertiary); margin-right: 4px; white-space: nowrap; }
 
-.field { display: flex; flex-direction: column; gap: 7px; margin-bottom: 14px; }
-.field > span { font-size: 13px; font-weight: 600; color: var(--txt-secondary); }
+.field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
+.field:last-child { margin-bottom: 0; }
+.field > span { font-size: 12.5px; font-weight: 600; color: var(--txt-tertiary); }
 .field input[type=text], .field textarea, .sub input:not([type=color]), .card-edit input:not([type=color]) {
   border: 1px solid var(--border-tertiary); border-radius: 12px; padding: 12px 14px; font-size: 14px;
   font-family: inherit; width: 100%; resize: vertical;

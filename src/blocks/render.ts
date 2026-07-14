@@ -160,14 +160,14 @@ function section(
   const finalBg = ctx?.bg && ctx.bg.trim() ? ctx.bg : bg;
   const finalPad = padWithExtra(pad, ctx?.space ?? 0);
   const img = (ctx?.bgImage ?? "").trim();
-  // 배경색을 fallback으로 두고 그 위에 이미지를 cover로 깐다.
+  // 배경 이미지는 본문 폭(maxWidth) 컬럼에만 깐다 → PC·모바일 모두 같은 폭에서
+  // 같은 비율로 스케일되어 기기별로 다르게 잘리지 않아요. (배경'색'만 좌우 풀블리드)
   const bgImgCss = img
     ? `background-image:url(&quot;${esc(img)}&quot;);background-size:cover;background-position:center;background-repeat:no-repeat;`
     : "";
   const fgCss = ctx?.fg && ctx.fg.trim() ? `color:${ctx.fg};` : "";
-  // 배경(색·이미지)은 화면 좌우 끝까지 꽉 채우고, 콘텐츠는 max-width 컬럼으로 가운데 정렬해요.
-  // → PC 폭에서도 지정한 배경색·이미지는 좌우로 넓어지고, 본문은 폰 폭을 유지.
-  return `<section${anchor} style="background-color:${finalBg};${bgImgCss}${fgCss}scroll-margin-top:8px;"><div style="max-width:${tokens.layout.maxWidth}px;margin:0 auto;padding:${finalPad};box-sizing:border-box;">${inner}</div></section>`;
+  // 배경색은 화면 좌우 끝까지 꽉 채우고, 콘텐츠(와 배경 이미지)는 max-width 컬럼으로 가운데 정렬.
+  return `<section${anchor} style="background-color:${finalBg};${fgCss}scroll-margin-top:8px;"><div style="max-width:${tokens.layout.maxWidth}px;margin:0 auto;padding:${finalPad};box-sizing:border-box;${bgImgCss}">${inner}</div></section>`;
 }
 
 // ---- 블록별 렌더 ----

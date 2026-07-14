@@ -10,6 +10,7 @@ export interface Field {
   kind: FieldKind;
   placeholder?: string;
   group?: string; // 인스펙터 아코디언 묶음 이름 (없으면 "내용")
+  hint?: string; // 이미지 업로더 등에 표시할 권장 사이즈 안내
 }
 
 export interface BlockMeta {
@@ -30,7 +31,7 @@ export const BLOCKS: Record<BlockType, BlockMeta> = {
     accent: "#1f2937",
     code: "HERO",
     fields: [
-      { key: "imageUrl", label: "배너 이미지", kind: "image", group: "배너 이미지" },
+      { key: "imageUrl", label: "배너 이미지", kind: "image", group: "배너 이미지", hint: "권장 폭 840px 이상 (본문 폭 420px의 2배) · JPG·PNG" },
     ],
     create: () => ({
       id: newId(),
@@ -122,7 +123,7 @@ export const BLOCKS: Record<BlockType, BlockMeta> = {
       { key: "badge", label: "뱃지", kind: "text", placeholder: "NEW LAUNCH", group: "타이틀 / 문구" },
       { key: "title", label: "헤드라인", kind: "textarea", placeholder: "마사지 베개 1위", group: "타이틀 / 문구" },
       { key: "subtitle", label: "서브카피", kind: "textarea", group: "타이틀 / 문구" },
-      { key: "imageUrl", label: "제품 이미지", kind: "image", group: "이미지" },
+      { key: "imageUrl", label: "제품 이미지", kind: "image", group: "이미지", hint: "권장 폭 840px 이상 (본문 폭 420px의 2배) · JPG·PNG" },
       { key: "imageLabel", label: "이미지 라벨", kind: "text", placeholder: "딥슬립 마사지 베개", group: "이미지" },
       { key: "consumerPrice", label: "소비자가", kind: "text", placeholder: "89,000", group: "가격" },
       { key: "salePrice", label: "할인가", kind: "text", placeholder: "54,900", group: "가격" },
@@ -186,7 +187,7 @@ export const BLOCKS: Record<BlockType, BlockMeta> = {
       { key: "badge", label: "뱃지", kind: "text", placeholder: "상반기 결산 특별혜택", group: "타이틀 / 문구" },
       { key: "title", label: "헤드라인", kind: "textarea", placeholder: "전 고객 5,000P 감사 적립금", group: "타이틀 / 문구" },
       { key: "subtitle", label: "서브카피", kind: "textarea", group: "타이틀 / 문구" },
-      { key: "bannerUrl", label: "배너 이미지", kind: "image", group: "이미지" },
+      { key: "bannerUrl", label: "배너 이미지", kind: "image", group: "이미지", hint: "권장 폭 840px 이상 (본문 폭 420px의 2배) · JPG·PNG" },
       { key: "bannerLabel", label: "배너 라벨", kind: "text", placeholder: "이벤트 배너", group: "이미지" },
       { key: "ctaText", label: "버튼 문구", kind: "text", placeholder: "리뷰 참여하기", group: "버튼" },
       { key: "ctaLink", label: "버튼 링크", kind: "text", group: "버튼" },

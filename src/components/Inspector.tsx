@@ -27,9 +27,11 @@ function readFileAsDataUrl(file: File): Promise<string> {
 function ImageUploader({
   value,
   onChange,
+  hint,
 }: {
   value: string;
   onChange: (url: string) => void;
+  hint?: string;
 }) {
   const [over, setOver] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -89,6 +91,7 @@ function ImageUploader({
         value={isData ? "" : value}
         onChange={(e) => onChange(e.target.value)}
       />
+      {hint && <div className="img-up-hint">{hint}</div>}
     </div>
   );
 }
@@ -229,7 +232,11 @@ function FieldRow({ block, f }: { block: Block; f: Field }) {
     return (
       <label className="field">
         <span>{f.label}</span>
-        <ImageUploader value={val} onChange={(url) => update(block.id, { [f.key]: url })} />
+        <ImageUploader
+          value={val}
+          onChange={(url) => update(block.id, { [f.key]: url })}
+          hint={f.hint}
+        />
       </label>
     );
   }
@@ -444,6 +451,7 @@ export function Inspector({ block }: { block: Block }) {
           <ImageUploader
             value={block.bgImage ?? ""}
             onChange={(url) => setBlockMeta(block.id, { bgImage: url })}
+            hint="본문 폭(420px)에 맞춰 표시돼요. 권장 폭 840px 이상 · JPG·PNG"
           />
         </label>
         {block.type !== "nav" && (

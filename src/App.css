@@ -322,6 +322,7 @@ button { font-family: inherit; cursor: pointer; }
 .img-up-tools .add-mini { flex: 1; padding: 8px; }
 .img-up-tools .mini-clear { height: 36px; }
 .img-up-url { font-size: 12px; }
+.img-up-hint { font-size: 11px; line-height: 1.5; color: var(--txt-tertiary); margin-top: 2px; }
 .check { font-size: 14px; color: var(--txt-secondary); display: inline-flex; align-items: center; gap: 9px; cursor: pointer; }
 .check input { width: 18px; height: 18px; accent-color: var(--blue-500); }
 .add-mini { width: 100%; border: 1px dashed var(--border-secondary); background: var(--bg-secondary); border-radius: 10px; padding: 10px; font-size: 13px; color: var(--txt-blue-primary); font-weight: 600; }

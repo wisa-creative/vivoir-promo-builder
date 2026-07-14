@@ -204,6 +204,8 @@ button { font-family: inherit; cursor: pointer; }
 .resize-handle::after { content: ''; margin: auto; width: 5px; height: 54px; border-radius: 3px; background: var(--border-secondary); transition: .12s; }
 .resize-handle:hover::after { background: var(--blue-500); height: 72px; }
 
+/* 인스펙터 — 맨 아래 그룹이 패널 끝에 붙지 않게 아래 여백 넉넉히 */
+.inspector { padding-bottom: 56px; }
 /* 인스펙터 헤더 (섹션 타입별 색 dot) — 카드 대신 패널에 바로 얹는 플랫 헤더 */
 .insp-head {
   display: flex; flex-direction: column; gap: 5px;

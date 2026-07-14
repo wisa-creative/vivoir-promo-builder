@@ -269,7 +269,10 @@ button { font-family: inherit; cursor: pointer; }
 
 /* 배경색 입력 줄 */
 .color-row { display: flex; align-items: center; gap: 8px; }
-.color-chip { flex: 0 0 auto; width: 40px; height: 40px; padding: 0; border: 1.5px solid var(--border-secondary); border-radius: 10px; background: none; cursor: pointer; }
+.color-chip { flex: 0 0 auto; width: 42px; height: 42px; padding: 0; border: 1px solid var(--border-tertiary); border-radius: 10px; background: none; cursor: pointer; overflow: hidden; }
+.color-chip::-webkit-color-swatch-wrapper { padding: 0; }
+.color-chip::-webkit-color-swatch { border: 0; border-radius: 9px; }
+.color-chip::-moz-color-swatch { border: 0; border-radius: 9px; }
 .color-row input[type=text] { flex: 1; }
 .mini-clear { flex: 0 0 auto; width: 32px; height: 40px; border: 1px solid var(--border-secondary); background: var(--bg-primary); color: var(--txt-tertiary); border-radius: 10px; cursor: pointer; }
 .mini-clear:hover { color: var(--txt-primary); background: var(--bg-tertiary); }
@@ -280,7 +283,7 @@ button { font-family: inherit; cursor: pointer; }
 .field { display: flex; flex-direction: column; gap: 7px; margin-bottom: 14px; }
 .field > span { font-size: 13px; font-weight: 600; color: var(--txt-secondary); }
 .field input[type=text], .field textarea, .sub input:not([type=color]), .card-edit input:not([type=color]) {
-  border: 1.5px solid var(--border-secondary); border-radius: 12px; padding: 12px 14px; font-size: 14px;
+  border: 1px solid var(--border-tertiary); border-radius: 12px; padding: 12px 14px; font-size: 14px;
   font-family: inherit; width: 100%; resize: vertical;
   color: var(--txt-primary); background: var(--bg-primary); transition: .15s; outline: none;
 }
@@ -292,7 +295,7 @@ button { font-family: inherit; cursor: pointer; }
 .cs-select { position: relative; width: 100%; }
 .cs-trigger {
   display: flex; align-items: center; gap: 8px; width: 100%;
-  border: 1.5px solid var(--border-secondary); border-radius: 10px;
+  border: 1px solid var(--border-tertiary); border-radius: 10px;
   padding: 9px 12px; font-size: 13px; font-family: inherit; font-weight: 500;
   color: var(--txt-primary); background: var(--bg-primary); cursor: pointer; text-align: left;
   transition: border-color var(--dur-fast) var(--ease), box-shadow var(--dur-fast) var(--ease);
@@ -328,7 +331,7 @@ button { font-family: inherit; cursor: pointer; }
 .swatch { width: 30px; height: 30px; border-radius: 8px; border: 2px solid var(--border-secondary); cursor: pointer; }
 .swatch.on { border-color: var(--blue-500); box-shadow: 0 0 0 2px var(--bg-blue-primary); }
 .seg { display: flex; gap: 6px; }
-.seg-btn { flex: 1; padding: 10px 8px; border: 1.5px solid var(--border-secondary); background: var(--bg-primary); color: var(--txt-secondary); border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; }
+.seg-btn { flex: 1; padding: 10px 8px; border: 1px solid var(--border-tertiary); background: var(--bg-primary); color: var(--txt-secondary); border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; }
 .seg-btn:hover { background: var(--bg-tertiary); }
 .seg-btn.on { border-color: var(--blue-500); color: var(--txt-blue-primary); background: var(--bg-blue-primary); }
 
@@ -344,15 +347,20 @@ button { font-family: inherit; cursor: pointer; }
 
 /* 이미지 업로더 (드래그&드롭 + 버튼 + URL) */
 .img-up { display: flex; flex-direction: column; gap: 6px; }
-.img-drop { position: relative; border: 1.5px dashed var(--border-secondary); border-radius: 10px; background: var(--bg-primary); min-height: 96px; display: flex; align-items: center; justify-content: center; cursor: pointer; overflow: hidden; transition: border-color .12s, background .12s; }
+.img-drop { position: relative; border: 1px dashed var(--border-secondary); border-radius: 10px; background: var(--bg-primary); min-height: 96px; display: flex; align-items: center; justify-content: center; cursor: pointer; overflow: hidden; transition: border-color .12s, background .12s; }
 .img-drop:hover { border-color: var(--blue-500); }
 .img-drop.over { border-color: var(--blue-500); background: var(--bg-blue-primary); }
 .img-drop.has { border-style: solid; padding: 6px; }
 .img-drop img { display: block; max-width: 100%; max-height: 220px; border-radius: 6px; }
 .img-drop-hint { font-size: 12px; line-height: 1.5; color: var(--txt-tertiary); text-align: center; font-weight: 500; pointer-events: none; }
-.img-up-tools { display: flex; gap: 6px; align-items: center; }
-.img-up-tools .add-mini { flex: 1; padding: 8px; }
-.img-up-tools .mini-clear { height: 36px; }
+/* 이미지 위 우상단 지우기 버튼 (별도 업로드 버튼 없이 드롭박스 클릭 = 업로드/교체) */
+.img-clear {
+  position: absolute; top: 8px; right: 8px; width: 26px; height: 26px; border: 0;
+  border-radius: 8px; background: rgba(0,0,0,.55); color: #fff; font-size: 13px; line-height: 1;
+  display: inline-flex; align-items: center; justify-content: center; cursor: pointer;
+  transition: background var(--dur-fast) var(--ease);
+}
+.img-clear:hover { background: rgba(0,0,0,.78); }
 .img-up-url { font-size: 12px; }
 .img-up-hint { font-size: 11px; line-height: 1.5; color: var(--txt-tertiary); margin-top: 2px; }
 .check { font-size: 14px; color: var(--txt-secondary); display: inline-flex; align-items: center; gap: 9px; cursor: pointer; }

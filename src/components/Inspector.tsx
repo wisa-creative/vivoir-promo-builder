@@ -58,23 +58,25 @@ function ImageUploader({
         }}
       >
         {has ? (
-          <img src={value} alt="" />
+          <>
+            <img src={value} alt="" />
+            <button
+              className="img-clear"
+              title="이미지 지우기"
+              onClick={(e) => {
+                e.stopPropagation();
+                onChange("");
+              }}
+            >
+              ✕
+            </button>
+          </>
         ) : (
           <span className="img-drop-hint">
             이미지를 끌어다 놓거나
             <br />
             눌러서 올려요
           </span>
-        )}
-      </div>
-      <div className="img-up-tools">
-        <button className="add-mini" onClick={() => inputRef.current?.click()}>
-          {has ? "이미지 바꾸기" : "이미지 업로드"}
-        </button>
-        {has && (
-          <button className="mini-clear" title="이미지 지우기" onClick={() => onChange("")}>
-            ✕
-          </button>
         )}
       </div>
       <input

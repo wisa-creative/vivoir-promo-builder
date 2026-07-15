@@ -176,7 +176,9 @@ function section(
   const sectionBgImg = full ? bgImgCss : "";
   const innerBgImg = full ? "" : bgImgCss;
   // 배경색은 화면 좌우 끝까지 꽉 채우고, 콘텐츠는 max-width 컬럼으로 가운데 정렬.
-  return `<section${anchor} style="background-color:${finalBg};${sectionBgImg}${fgCss}scroll-margin-top:56px;"><div style="max-width:${tokens.layout.maxWidth}px;margin:0 auto;padding:${finalPad};box-sizing:border-box;${innerBgImg}">${inner}</div></section>`;
+  // margin:0;padding:0 → 카페24 스킨 전역 CSS(section{padding:64px 0})가 섹션마다 세로
+  // 여백을 강제로 넣어 간격을 망가뜨리는 걸 인라인으로 덮어써요(인라인이 우선).
+  return `<section${anchor} style="margin:0;padding:0;background-color:${finalBg};${sectionBgImg}${fgCss}scroll-margin-top:56px;"><div style="max-width:${tokens.layout.maxWidth}px;margin:0 auto;padding:${finalPad};box-sizing:border-box;${innerBgImg}">${inner}</div></section>`;
 }
 
 // ---- 블록별 렌더 ----
@@ -190,17 +192,17 @@ function renderHero(d: HeroData, ctx?: Ctx): string {
   // 넓은 화면(PC)=이미지가 좌우 끝까지 채워 크게 보이고, 좁은 화면(모바일)=중앙만 크롭.
   if (url) {
     const style =
-      `background-color:${bgColor};` +
+      `margin:0;padding:0;background-color:${bgColor};` +
       `background-image:url(&quot;${esc(url)}&quot;);background-size:cover;background-position:center;background-repeat:no-repeat;` +
       `scroll-margin-top:56px;`;
     return `<section${anchor} class="promo-hero" style="${style}"${da(ctx, "imageUrl")}></section>`;
   }
   // 이미지 없음: 내보내기에선 빈 섹션, 편집 프리뷰에선 업로드 박스(본문 폭 컬럼)
   if (!ctx?.edit) {
-    return `<section${anchor} style="background-color:${bgColor};scroll-margin-top:56px;"></section>`;
+    return `<section${anchor} style="margin:0;padding:0;background-color:${bgColor};scroll-margin-top:56px;"></section>`;
   }
   const banner = imageBox(url, "", { ratio: "58%", ctx, dropField: "imageUrl" });
-  return `<section${anchor} style="background-color:${bgColor};scroll-margin-top:56px;"><div style="max-width:${tokens.layout.maxWidth}px;margin:0 auto;padding:0 0 20px;box-sizing:border-box;">${banner}</div></section>`;
+  return `<section${anchor} style="margin:0;padding:0;background-color:${bgColor};scroll-margin-top:56px;"><div style="max-width:${tokens.layout.maxWidth}px;margin:0 auto;padding:0 0 20px;box-sizing:border-box;">${banner}</div></section>`;
 }
 
 function renderNav(d: NavData, ctx?: Ctx): string {

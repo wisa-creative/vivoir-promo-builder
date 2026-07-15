@@ -221,7 +221,7 @@ function renderNav(d: NavData, ctx?: Ctx): string {
       .map((b, i) => {
         const active = i === 0;
         const label = (b.navLabel && b.navLabel.trim()) || b.name || BLOCKS[b.type].label;
-        return `<a href="#${esc(b.id)}" style="display:block;flex:0 0 auto;text-align:center;white-space:nowrap;padding:15px 12px;font-size:14px;font-weight:${active ? 700 : 600};text-decoration:none;color:${active ? C.ink : C.inkSub};border-bottom:2px solid ${active ? C.ink : "transparent"};letter-spacing:-0.02em;">${esc(label)}</a>`;
+        return `<a href="#${esc(b.id)}" class="promo-nav-link${active ? " active" : ""}">${esc(label)}</a>`;
       })
       .join("");
   } else {
@@ -232,7 +232,7 @@ function renderNav(d: NavData, ctx?: Ctx): string {
       .map(({ it, i }) => {
         const active = i === 0;
         const href = it.target ? `#${esc(it.target)}` : "#";
-        return `<a href="${href}"${ea(ctx, "items", { index: i, subfield: "label" })} style="display:block;flex:0 0 auto;text-align:center;white-space:nowrap;padding:15px 12px;font-size:14px;font-weight:${active ? 700 : 600};text-decoration:none;color:${active ? C.ink : C.inkSub};border-bottom:2px solid ${active ? C.ink : "transparent"};letter-spacing:-0.02em;">${esc(it.label)}</a>`;
+        return `<a href="${href}" class="promo-nav-link${active ? " active" : ""}"${ea(ctx, "items", { index: i, subfield: "label" })}>${esc(it.label)}</a>`;
       })
       .join("");
   }
@@ -423,10 +423,14 @@ export function renderPageBody(blocks: Block[], opts?: { edit?: boolean }): stri
   // 편집(프리뷰) 모드에서는 scroll-behavior:smooth를 넣지 않아요.
   // 편집할 때마다 iframe이 리로드되며 스크롤을 복원하는데, smooth가 있으면 "위로 갔다 내려오는" 애니메이션이 보여요.
   const scrollBehavior = opts?.edit ? "" : "html{scroll-behavior:smooth;}";
+  // 스크롤스파이: 지금 보고 있는 섹션의 탭을 활성(색+밑줄)으로 표시하고, 모바일에선 그 탭이
+  // 보이도록 가로 내비를 살짝 스크롤해요. (>·줄바꿈을 피해 한 줄로 — export의 공백 압축과 충돌 방지)
+  const navSpyScript = `<script>(function(){var links=[].slice.call(document.querySelectorAll('.promo-nav-link'));if(!links.length)return;var pairs=[];links.forEach(function(a){var h=a.getAttribute('href');if(!h||h.charAt(0)!=='#'||h.length<2)return;var sec=document.getElementById(h.slice(1));if(sec)pairs.push({a:a,sec:sec});});if(!pairs.length)return;var last=null,ticking=false;function update(){ticking=false;var cur=pairs[0].a;for(var i=0;i<pairs.length;i++){if(pairs[i].sec.getBoundingClientRect().top<=80)cur=pairs[i].a;}if(cur===last)return;last=cur;links.forEach(function(l){l.classList.toggle('active',l===cur);});var box=cur.parentNode;if(box&&box.scrollWidth-box.clientWidth>1){box.scrollTo({left:cur.offsetLeft-(box.clientWidth-cur.offsetWidth)/2,behavior:'smooth'});}}function onScroll(){if(!ticking){ticking=true;requestAnimationFrame(update);}}window.addEventListener('scroll',onScroll,{passive:true});window.addEventListener('resize',onScroll,{passive:true});update();})();</script>`;
   // 바깥 래퍼는 폭 제한 없이 전체 폭 — 각 섹션이 스스로 배경을 좌우 끝까지 깔고, 콘텐츠만 가운데 정렬해요.
   return `<div style="font-family:${tokens.font.family};background:${C.white};color:${C.ink};">
-<style>details>summary{list-style:none;}details>summary::-webkit-details-marker{display:none;}.promo-caret{transition:transform .18s ease;}details[open] .promo-caret{transform:rotate(180deg);}${scrollBehavior}nav::-webkit-scrollbar{display:none;}.promo-hero{width:100%;height:480px;}@media (max-width:480px){.promo-hero{height:auto;aspect-ratio:4/5;}}.promo-nav{flex-wrap:nowrap;overflow-x:auto;justify-content:flex-start;max-width:${tokens.layout.maxWidth}px;-webkit-overflow-scrolling:touch;scrollbar-width:none;-ms-overflow-style:none;}.promo-nav::-webkit-scrollbar{display:none;}@media (min-width:481px){.promo-nav{overflow-x:visible;justify-content:center;max-width:none;}}</style>
+<style>details>summary{list-style:none;}details>summary::-webkit-details-marker{display:none;}.promo-caret{transition:transform .18s ease;}details[open] .promo-caret{transform:rotate(180deg);}${scrollBehavior}nav::-webkit-scrollbar{display:none;}.promo-hero{width:100%;height:480px;}@media (max-width:480px){.promo-hero{height:auto;aspect-ratio:4/5;}}.promo-nav{flex-wrap:nowrap;overflow-x:auto;justify-content:flex-start;max-width:${tokens.layout.maxWidth}px;-webkit-overflow-scrolling:touch;scrollbar-width:none;-ms-overflow-style:none;}.promo-nav::-webkit-scrollbar{display:none;}@media (min-width:481px){.promo-nav{overflow-x:visible;justify-content:center;max-width:none;}}.promo-nav-link{display:block;flex:0 0 auto;text-align:center;white-space:nowrap;padding:15px 12px;font-size:14px;font-weight:600;text-decoration:none;color:${C.inkSub};border-bottom:2px solid transparent;letter-spacing:-0.02em;transition:color .15s ease,border-color .15s ease;}.promo-nav-link.active{color:${C.ink};font-weight:700;border-bottom-color:${C.ink};}</style>
 ${body}
+${navSpyScript}
 </div>`;
 }
 

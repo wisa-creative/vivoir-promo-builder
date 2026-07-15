@@ -153,6 +153,13 @@ function padWithExtra(pad: string, extra: number): string {
   return `${top}px ${r}px ${bottom}px ${l}px`;
 }
 
+// 카페24 스킨은 본문(#contents)을 특정 폭으로 가둬서(PC에서 좌우 여백) 우리 섹션의
+// 배경색이 화면 끝까지 안 닿아요. width:100vw + left:50%/margin-left:-50vw 로
+// 컨테이너를 뚫고 화면 전체 폭으로 배경을 깝니다(콘텐츠는 안쪽 컬럼에서 가운데 정렬 유지).
+// padding:0 은 카페24 전역 CSS(section{padding:64px 0})가 넣는 세로 여백도 함께 무력화.
+const FULL_BLEED =
+  "position:relative;left:50%;right:50%;width:100vw;margin-left:-50vw;margin-right:-50vw;padding:0;";
+
 function section(
   inner: string,
   bg: string,
@@ -176,9 +183,7 @@ function section(
   const sectionBgImg = full ? bgImgCss : "";
   const innerBgImg = full ? "" : bgImgCss;
   // 배경색은 화면 좌우 끝까지 꽉 채우고, 콘텐츠는 max-width 컬럼으로 가운데 정렬.
-  // margin:0;padding:0 → 카페24 스킨 전역 CSS(section{padding:64px 0})가 섹션마다 세로
-  // 여백을 강제로 넣어 간격을 망가뜨리는 걸 인라인으로 덮어써요(인라인이 우선).
-  return `<section${anchor} style="margin:0;padding:0;background-color:${finalBg};${sectionBgImg}${fgCss}scroll-margin-top:56px;"><div style="max-width:${tokens.layout.maxWidth}px;margin:0 auto;padding:${finalPad};box-sizing:border-box;${innerBgImg}">${inner}</div></section>`;
+  return `<section${anchor} style="${FULL_BLEED}background-color:${finalBg};${sectionBgImg}${fgCss}scroll-margin-top:56px;"><div style="max-width:${tokens.layout.maxWidth}px;margin:0 auto;padding:${finalPad};box-sizing:border-box;${innerBgImg}">${inner}</div></section>`;
 }
 
 // ---- 블록별 렌더 ----
@@ -192,17 +197,17 @@ function renderHero(d: HeroData, ctx?: Ctx): string {
   // 넓은 화면(PC)=이미지가 좌우 끝까지 채워 크게 보이고, 좁은 화면(모바일)=중앙만 크롭.
   if (url) {
     const style =
-      `margin:0;padding:0;background-color:${bgColor};` +
+      `${FULL_BLEED}background-color:${bgColor};` +
       `background-image:url(&quot;${esc(url)}&quot;);background-size:cover;background-position:center;background-repeat:no-repeat;` +
       `scroll-margin-top:56px;`;
     return `<section${anchor} class="promo-hero" style="${style}"${da(ctx, "imageUrl")}></section>`;
   }
   // 이미지 없음: 내보내기에선 빈 섹션, 편집 프리뷰에선 업로드 박스(본문 폭 컬럼)
   if (!ctx?.edit) {
-    return `<section${anchor} style="margin:0;padding:0;background-color:${bgColor};scroll-margin-top:56px;"></section>`;
+    return `<section${anchor} style="${FULL_BLEED}background-color:${bgColor};scroll-margin-top:56px;"></section>`;
   }
   const banner = imageBox(url, "", { ratio: "58%", ctx, dropField: "imageUrl" });
-  return `<section${anchor} style="margin:0;padding:0;background-color:${bgColor};scroll-margin-top:56px;"><div style="max-width:${tokens.layout.maxWidth}px;margin:0 auto;padding:0 0 20px;box-sizing:border-box;">${banner}</div></section>`;
+  return `<section${anchor} style="${FULL_BLEED}background-color:${bgColor};scroll-margin-top:56px;"><div style="max-width:${tokens.layout.maxWidth}px;margin:0 auto;padding:0 0 20px;box-sizing:border-box;">${banner}</div></section>`;
 }
 
 function renderNav(d: NavData, ctx?: Ctx): string {
@@ -233,11 +238,11 @@ function renderNav(d: NavData, ctx?: Ctx): string {
   }
   const anchor = ctx?.id ? ` id="${esc(ctx.id)}"` : "";
   const navBg = ctx?.bg && ctx.bg.trim() ? ctx.bg : C.white;
-  // 스크롤 내려도 상단에 고정(sticky). 배경·구분선은 좌우 끝까지.
-  // 탭은 flex-wrap으로 줄바꿈 → 화면이 넓으면(PC) 한 줄에 전부 펼쳐 보이고,
-  // 좁아서(모바일) 다 안 들어가면 다음 줄로 내려가 전부 보여요.
-  // (예전엔 가로 스크롤이었는데, 스크롤바를 숨겨둬서 PC에서 넘친 탭에 손이 안 닿았어요.)
-  return `<nav${anchor} style="background:${navBg};border-bottom:1px solid ${C.line};position:sticky;top:0;z-index:50;"><div style="display:flex;flex-wrap:wrap;justify-content:center;max-width:${tokens.layout.maxWidth}px;margin:0 auto;">${items}</div></nav>`;
+  // 스크롤 내려도 상단에 고정(sticky). 배경·구분선은 화면 좌우 끝까지(full-bleed).
+  //  - sticky와 함께 쓰려고 position:relative 대신 margin 트릭(width:100vw + margin-left:calc)을 써요.
+  // 탭 정렬(.promo-nav): 모바일(≤480)은 줄바꿈해서 전부 보이고, PC(≥481)는 한 줄에 전부 노출.
+  //  (예전엔 가로 스크롤이었는데, 스크롤바를 숨겨둬서 PC에서 넘친 탭에 손이 안 닿았어요.)
+  return `<nav${anchor} style="background:${navBg};border-bottom:1px solid ${C.line};position:sticky;top:0;z-index:50;width:100vw;margin-left:calc(50% - 50vw);"><div class="promo-nav" style="display:flex;justify-content:center;margin:0 auto;">${items}</div></nav>`;
 }
 
 // 쿠폰팩 '한 번에 다운받기' 버튼. 색을 지정하면 채움 버튼, 비우면 흰 배경 외곽선 기본.
@@ -421,7 +426,7 @@ export function renderPageBody(blocks: Block[], opts?: { edit?: boolean }): stri
   const scrollBehavior = opts?.edit ? "" : "html{scroll-behavior:smooth;}";
   // 바깥 래퍼는 폭 제한 없이 전체 폭 — 각 섹션이 스스로 배경을 좌우 끝까지 깔고, 콘텐츠만 가운데 정렬해요.
   return `<div style="font-family:${tokens.font.family};background:${C.white};color:${C.ink};">
-<style>details>summary{list-style:none;}details>summary::-webkit-details-marker{display:none;}.promo-caret{transition:transform .18s ease;}details[open] .promo-caret{transform:rotate(180deg);}${scrollBehavior}nav::-webkit-scrollbar{display:none;}.promo-hero{width:100%;height:480px;}@media (max-width:480px){.promo-hero{height:auto;aspect-ratio:4/5;}}</style>
+<style>details>summary{list-style:none;}details>summary::-webkit-details-marker{display:none;}.promo-caret{transition:transform .18s ease;}details[open] .promo-caret{transform:rotate(180deg);}${scrollBehavior}nav::-webkit-scrollbar{display:none;}.promo-hero{width:100%;height:480px;}@media (max-width:480px){.promo-hero{height:auto;aspect-ratio:4/5;}}.promo-nav{flex-wrap:wrap;max-width:${tokens.layout.maxWidth}px;}@media (min-width:481px){.promo-nav{flex-wrap:nowrap;max-width:none;}}</style>
 ${body}
 </div>`;
 }

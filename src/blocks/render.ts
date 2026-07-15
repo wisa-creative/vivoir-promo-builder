@@ -240,9 +240,8 @@ function renderNav(d: NavData, ctx?: Ctx): string {
   const navBg = ctx?.bg && ctx.bg.trim() ? ctx.bg : C.white;
   // 스크롤 내려도 상단에 고정(sticky). 배경·구분선은 화면 좌우 끝까지(full-bleed).
   //  - sticky와 함께 쓰려고 position:relative 대신 margin 트릭(width:100vw + margin-left:calc)을 써요.
-  // 탭 정렬(.promo-nav): 모바일(≤480)은 줄바꿈해서 전부 보이고, PC(≥481)는 한 줄에 전부 노출.
-  //  (예전엔 가로 스크롤이었는데, 스크롤바를 숨겨둬서 PC에서 넘친 탭에 손이 안 닿았어요.)
-  return `<nav${anchor} style="background:${navBg};border-bottom:1px solid ${C.line};position:sticky;top:0;z-index:50;width:100vw;margin-left:calc(50% - 50vw);"><div class="promo-nav" style="display:flex;justify-content:center;margin:0 auto;">${items}</div></nav>`;
+  // 탭(.promo-nav): 모바일(≤480)은 가로 스크롤(스와이프로 슬라이드), PC(≥481)는 한 줄에 전부 노출.
+  return `<nav${anchor} style="background:${navBg};border-bottom:1px solid ${C.line};position:sticky;top:0;z-index:50;width:100vw;margin-left:calc(50% - 50vw);"><div class="promo-nav" style="display:flex;margin:0 auto;">${items}</div></nav>`;
 }
 
 // 쿠폰팩 '한 번에 다운받기' 버튼. 색을 지정하면 채움 버튼, 비우면 흰 배경 외곽선 기본.
@@ -426,7 +425,7 @@ export function renderPageBody(blocks: Block[], opts?: { edit?: boolean }): stri
   const scrollBehavior = opts?.edit ? "" : "html{scroll-behavior:smooth;}";
   // 바깥 래퍼는 폭 제한 없이 전체 폭 — 각 섹션이 스스로 배경을 좌우 끝까지 깔고, 콘텐츠만 가운데 정렬해요.
   return `<div style="font-family:${tokens.font.family};background:${C.white};color:${C.ink};">
-<style>details>summary{list-style:none;}details>summary::-webkit-details-marker{display:none;}.promo-caret{transition:transform .18s ease;}details[open] .promo-caret{transform:rotate(180deg);}${scrollBehavior}nav::-webkit-scrollbar{display:none;}.promo-hero{width:100%;height:480px;}@media (max-width:480px){.promo-hero{height:auto;aspect-ratio:4/5;}}.promo-nav{flex-wrap:wrap;max-width:${tokens.layout.maxWidth}px;}@media (min-width:481px){.promo-nav{flex-wrap:nowrap;max-width:none;}}</style>
+<style>details>summary{list-style:none;}details>summary::-webkit-details-marker{display:none;}.promo-caret{transition:transform .18s ease;}details[open] .promo-caret{transform:rotate(180deg);}${scrollBehavior}nav::-webkit-scrollbar{display:none;}.promo-hero{width:100%;height:480px;}@media (max-width:480px){.promo-hero{height:auto;aspect-ratio:4/5;}}.promo-nav{flex-wrap:nowrap;overflow-x:auto;justify-content:flex-start;max-width:${tokens.layout.maxWidth}px;-webkit-overflow-scrolling:touch;scrollbar-width:none;-ms-overflow-style:none;}.promo-nav::-webkit-scrollbar{display:none;}@media (min-width:481px){.promo-nav{overflow-x:visible;justify-content:center;max-width:none;}}</style>
 ${body}
 </div>`;
 }

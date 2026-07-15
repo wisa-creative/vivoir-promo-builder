@@ -183,21 +183,24 @@ function section(
 
 function renderHero(d: HeroData, ctx?: Ctx): string {
   const url = (d.imageUrl ?? "").trim();
-  // 리뷰 혜택 섹션의 '배경 이미지'와 완전히 동일한 구조:
-  // background-image + background-size:cover + background-position:center.
-  // 넓은 화면(PC)에선 이미지가 크게 보이고, 좁은 화면(모바일)에선 같은 이미지가
-  // 중앙 기준으로 크롭돼서 가운데 부분만 노출돼요. (높이/비율은 <style>에 있어요)
+  const anchor = ctx?.id ? ` id="${esc(ctx.id)}"` : "";
+  const bgColor = ctx?.bg && ctx.bg.trim() ? ctx.bg : C.heroBg;
+  // 리뷰 혜택 배경 이미지와 동일한 방식(background cover+center)이되,
+  // 히어로는 본문 폭(420px) 컬럼에 가두지 않고 화면 끝까지(full-bleed) 깔아요.
+  // 넓은 화면(PC)=이미지가 좌우 끝까지 채워 크게 보이고, 좁은 화면(모바일)=중앙만 크롭.
   if (url) {
-    const bgCss = `background-image:url(&quot;${esc(url)}&quot;);background-size:cover;background-position:center;background-repeat:no-repeat;`;
-    const box = `<div class="promo-hero" style="${bgCss}"${da(ctx, "imageUrl")}></div>`;
-    return section(box, C.heroBg, "0", ctx?.id, ctx);
+    const style =
+      `background-color:${bgColor};` +
+      `background-image:url(&quot;${esc(url)}&quot;);background-size:cover;background-position:center;background-repeat:no-repeat;` +
+      `scroll-margin-top:56px;`;
+    return `<section${anchor} class="promo-hero" style="${style}"${da(ctx, "imageUrl")}></section>`;
   }
   // 이미지 없음: 내보내기에선 빈 섹션, 편집 프리뷰에선 업로드 박스(본문 폭 컬럼)
   if (!ctx?.edit) {
-    return section("", C.heroBg, "0", ctx?.id, ctx);
+    return `<section${anchor} style="background-color:${bgColor};scroll-margin-top:56px;"></section>`;
   }
   const banner = imageBox(url, "", { ratio: "58%", ctx, dropField: "imageUrl" });
-  return section(banner, C.heroBg, "0", ctx?.id, ctx);
+  return `<section${anchor} style="background-color:${bgColor};scroll-margin-top:56px;"><div style="max-width:${tokens.layout.maxWidth}px;margin:0 auto;padding:0 0 20px;box-sizing:border-box;">${banner}</div></section>`;
 }
 
 function renderNav(d: NavData, ctx?: Ctx): string {

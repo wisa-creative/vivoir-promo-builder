@@ -183,13 +183,12 @@ function section(
 
 function renderHero(d: HeroData, ctx?: Ctx): string {
   const url = (d.imageUrl ?? "").trim();
-  // 이미지가 있으면 화면 전체 폭 풀블리드 배너로 — 420 컬럼에 가두지 않고 섹션 폭 전체를
-  // 꽉 채우고, 모서리 각지게·아래 여백 없이 딱 붙여요(다음 섹션과 flush).
+  // 이미지가 있으면 좌우 여백 없이 꽉 찬 배너(모서리 각지게)로 보여줘요.
+  // 단 하단 섹션들과 똑같이 본문 폭(420px) 컬럼 안에 넣어, 넓은 화면(PC)에서
+  // 비율대로 커지지 않고 다른 섹션과 같은 폭으로 정렬돼요. (모바일=화면 꽉 참)
   if (url) {
-    const anchor = ctx?.id ? ` id="${esc(ctx.id)}"` : "";
-    const finalBg = ctx?.bg && ctx.bg.trim() ? ctx.bg : C.heroBg;
     const img = `<img src="${esc(url)}" alt=""${da(ctx, "imageUrl")} style="display:block;width:100%;height:auto;border:0;" />`;
-    return `<section${anchor} style="background-color:${finalBg};scroll-margin-top:56px;">${img}</section>`;
+    return section(img, C.heroBg, "0", ctx?.id, ctx);
   }
   // 이미지 없음: 내보내기에선 빈 섹션, 편집 프리뷰에선 업로드 박스(본문 폭 컬럼)
   if (!ctx?.edit) {

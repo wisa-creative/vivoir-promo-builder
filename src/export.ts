@@ -3,7 +3,10 @@ import type { Block } from "./types";
 import { renderPageBody } from "./blocks/render";
 
 export function buildExportHtml(blocks: Block[]): string {
-  return renderPageBody(blocks);
+  // Cafe24 스마트디자인 편집기는 태그 사이의 줄바꿈·공백을 <br>·<p>&nbsp;</p>로
+  // 바꿔 넣어 섹션 간격을 망가뜨려요. 태그와 태그 사이의 공백만 제거해 한 줄로 내보냅니다.
+  // (텍스트 안의 줄바꿈 = white-space:pre-line 은 '>...<' 사이가 아니라 건드리지 않아요.)
+  return renderPageBody(blocks).replace(/>\s+</g, "><");
 }
 
 // 미리보기 결과를 PNG 이미지로 저장. width는 렌더 폭(px).

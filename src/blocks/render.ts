@@ -176,7 +176,7 @@ function section(
   const sectionBgImg = full ? bgImgCss : "";
   const innerBgImg = full ? "" : bgImgCss;
   // 배경색은 화면 좌우 끝까지 꽉 채우고, 콘텐츠는 max-width 컬럼으로 가운데 정렬.
-  return `<section${anchor} style="background-color:${finalBg};${sectionBgImg}${fgCss}scroll-margin-top:8px;"><div style="max-width:${tokens.layout.maxWidth}px;margin:0 auto;padding:${finalPad};box-sizing:border-box;${innerBgImg}">${inner}</div></section>`;
+  return `<section${anchor} style="background-color:${finalBg};${sectionBgImg}${fgCss}scroll-margin-top:56px;"><div style="max-width:${tokens.layout.maxWidth}px;margin:0 auto;padding:${finalPad};box-sizing:border-box;${innerBgImg}">${inner}</div></section>`;
 }
 
 // ---- 블록별 렌더 ----
@@ -189,7 +189,7 @@ function renderHero(d: HeroData, ctx?: Ctx): string {
     const anchor = ctx?.id ? ` id="${esc(ctx.id)}"` : "";
     const finalBg = ctx?.bg && ctx.bg.trim() ? ctx.bg : C.heroBg;
     const img = `<img src="${esc(url)}" alt=""${da(ctx, "imageUrl")} style="display:block;width:100%;height:auto;border:0;" />`;
-    return `<section${anchor} style="background-color:${finalBg};scroll-margin-top:8px;">${img}</section>`;
+    return `<section${anchor} style="background-color:${finalBg};scroll-margin-top:56px;">${img}</section>`;
   }
   // 이미지 없음: 내보내기에선 빈 섹션, 편집 프리뷰에선 업로드 박스(본문 폭 컬럼)
   if (!ctx?.edit) {
@@ -210,7 +210,7 @@ function renderNav(d: NavData, ctx?: Ctx): string {
       .map((b, i) => {
         const active = i === 0;
         const label = (b.navLabel && b.navLabel.trim()) || b.name || BLOCKS[b.type].label;
-        return `<a href="#${esc(b.id)}" style="display:inline-block;padding:15px 13px;font-size:14px;font-weight:${active ? 700 : 600};text-decoration:none;color:${active ? C.ink : C.inkSub};border-bottom:2px solid ${active ? C.ink : "transparent"};letter-spacing:-0.02em;">${esc(label)}</a>`;
+        return `<a href="#${esc(b.id)}" style="display:block;flex:1 0 auto;text-align:center;white-space:nowrap;padding:15px 8px;font-size:14px;font-weight:${active ? 700 : 600};text-decoration:none;color:${active ? C.ink : C.inkSub};border-bottom:2px solid ${active ? C.ink : "transparent"};letter-spacing:-0.02em;">${esc(label)}</a>`;
       })
       .join("");
   } else {
@@ -221,14 +221,16 @@ function renderNav(d: NavData, ctx?: Ctx): string {
       .map(({ it, i }) => {
         const active = i === 0;
         const href = it.target ? `#${esc(it.target)}` : "#";
-        return `<a href="${href}"${ea(ctx, "items", { index: i, subfield: "label" })} style="display:inline-block;padding:15px 13px;font-size:14px;font-weight:${active ? 700 : 600};text-decoration:none;color:${active ? C.ink : C.inkSub};border-bottom:2px solid ${active ? C.ink : "transparent"};letter-spacing:-0.02em;">${esc(it.label)}</a>`;
+        return `<a href="${href}"${ea(ctx, "items", { index: i, subfield: "label" })} style="display:block;flex:1 0 auto;text-align:center;white-space:nowrap;padding:15px 8px;font-size:14px;font-weight:${active ? 700 : 600};text-decoration:none;color:${active ? C.ink : C.inkSub};border-bottom:2px solid ${active ? C.ink : "transparent"};letter-spacing:-0.02em;">${esc(it.label)}</a>`;
       })
       .join("");
   }
   const anchor = ctx?.id ? ` id="${esc(ctx.id)}"` : "";
   const navBg = ctx?.bg && ctx.bg.trim() ? ctx.bg : C.white;
-  // 배경·구분선은 좌우 끝까지, 탭은 max-width 컬럼 안에서 가로 스크롤
-  return `<nav${anchor} style="background:${navBg};border-bottom:1px solid ${C.line};"><div style="max-width:${tokens.layout.maxWidth}px;margin:0 auto;padding:0 8px;overflow-x:auto;white-space:nowrap;-webkit-overflow-scrolling:touch;scrollbar-width:none;-ms-overflow-style:none;">${items}</div></nav>`;
+  // 스크롤 내려도 상단에 고정(sticky). 배경·구분선은 좌우 끝까지.
+  // 탭은 flex로 폭을 나눠 가짐 → 화면이 넓으면(PC) 전부 펼쳐 보이고,
+  // 좁아서(모바일) 다 안 들어가면 flex-shrink:0 덕에 넘쳐서 가로 스크롤돼요.
+  return `<nav${anchor} style="background:${navBg};border-bottom:1px solid ${C.line};position:sticky;top:0;z-index:50;"><div style="display:flex;max-width:${tokens.layout.maxWidth}px;margin:0 auto;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;-ms-overflow-style:none;">${items}</div></nav>`;
 }
 
 // 쿠폰팩 '한 번에 다운받기' 버튼. 색을 지정하면 채움 버튼, 비우면 흰 배경 외곽선 기본.

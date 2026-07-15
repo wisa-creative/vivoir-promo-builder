@@ -418,7 +418,7 @@ export function renderPageBody(blocks: Block[], opts?: { edit?: boolean }): stri
   const scrollBehavior = opts?.edit ? "" : "html{scroll-behavior:smooth;}";
   // 바깥 래퍼는 폭 제한 없이 전체 폭 — 각 섹션이 스스로 배경을 좌우 끝까지 깔고, 콘텐츠만 가운데 정렬해요.
   return `<div style="font-family:${tokens.font.family};background:${C.white};color:${C.ink};">
-<style>details>summary{list-style:none;}details>summary::-webkit-details-marker{display:none;}.promo-caret{transition:transform .18s ease;}details[open] .promo-caret{transform:rotate(180deg);}${scrollBehavior}nav::-webkit-scrollbar{display:none;}.promo-hero{width:100%;aspect-ratio:16/9;}@media (max-width:480px){.promo-hero{aspect-ratio:4/5;}}</style>
+<style>details>summary{list-style:none;}details>summary::-webkit-details-marker{display:none;}.promo-caret{transition:transform .18s ease;}details[open] .promo-caret{transform:rotate(180deg);}${scrollBehavior}nav::-webkit-scrollbar{display:none;}.promo-hero{width:100%;height:480px;}@media (max-width:480px){.promo-hero{height:auto;aspect-ratio:4/5;}}</style>
 ${body}
 </div>`;
 }

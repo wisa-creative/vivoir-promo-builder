@@ -183,8 +183,16 @@ function section(
 
 function renderHero(d: HeroData, ctx?: Ctx): string {
   const url = (d.imageUrl ?? "").trim();
-  // 이미지가 있으면 전체 폭 배너, 없으면 편집 프리뷰에서 업로드 박스(내보내기에선 빈 섹션)
-  if (!url && !ctx?.edit) {
+  // 이미지가 있으면 화면 전체 폭 풀블리드 배너로 — 420 컬럼에 가두지 않고 섹션 폭 전체를
+  // 꽉 채우고, 모서리 각지게·아래 여백 없이 딱 붙여요(다음 섹션과 flush).
+  if (url) {
+    const anchor = ctx?.id ? ` id="${esc(ctx.id)}"` : "";
+    const finalBg = ctx?.bg && ctx.bg.trim() ? ctx.bg : C.heroBg;
+    const img = `<img src="${esc(url)}" alt=""${da(ctx, "imageUrl")} style="display:block;width:100%;height:auto;border:0;" />`;
+    return `<section${anchor} style="background-color:${finalBg};scroll-margin-top:8px;">${img}</section>`;
+  }
+  // 이미지 없음: 내보내기에선 빈 섹션, 편집 프리뷰에선 업로드 박스(본문 폭 컬럼)
+  if (!ctx?.edit) {
     return section("", C.heroBg, "0", ctx?.id, ctx);
   }
   const banner = imageBox(url, "", { ratio: "58%", ctx, dropField: "imageUrl" });

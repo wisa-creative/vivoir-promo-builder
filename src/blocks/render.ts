@@ -183,12 +183,14 @@ function section(
 
 function renderHero(d: HeroData, ctx?: Ctx): string {
   const url = (d.imageUrl ?? "").trim();
-  // 이미지가 있으면 좌우 여백 없이 꽉 찬 배너로. 넓은 화면(PC)에선 이미지 전체가
-  // 보이고(height:auto), 좁은 화면(모바일)에선 축소하지 않고 cover+center로
-  // 가운데 부분만 잘라서 보여줘요. (반응형 규칙은 renderPageBody의 <style>에 있어요)
+  // 리뷰 혜택 섹션의 '배경 이미지'와 완전히 동일한 구조:
+  // background-image + background-size:cover + background-position:center.
+  // 넓은 화면(PC)에선 이미지가 크게 보이고, 좁은 화면(모바일)에선 같은 이미지가
+  // 중앙 기준으로 크롭돼서 가운데 부분만 노출돼요. (높이/비율은 <style>에 있어요)
   if (url) {
-    const img = `<div class="promo-hero"><img src="${esc(url)}" alt=""${da(ctx, "imageUrl")} /></div>`;
-    return section(img, C.heroBg, "0", ctx?.id, ctx);
+    const bgCss = `background-image:url(&quot;${esc(url)}&quot;);background-size:cover;background-position:center;background-repeat:no-repeat;`;
+    const box = `<div class="promo-hero" style="${bgCss}"${da(ctx, "imageUrl")}></div>`;
+    return section(box, C.heroBg, "0", ctx?.id, ctx);
   }
   // 이미지 없음: 내보내기에선 빈 섹션, 편집 프리뷰에선 업로드 박스(본문 폭 컬럼)
   if (!ctx?.edit) {
@@ -413,7 +415,7 @@ export function renderPageBody(blocks: Block[], opts?: { edit?: boolean }): stri
   const scrollBehavior = opts?.edit ? "" : "html{scroll-behavior:smooth;}";
   // 바깥 래퍼는 폭 제한 없이 전체 폭 — 각 섹션이 스스로 배경을 좌우 끝까지 깔고, 콘텐츠만 가운데 정렬해요.
   return `<div style="font-family:${tokens.font.family};background:${C.white};color:${C.ink};">
-<style>details>summary{list-style:none;}details>summary::-webkit-details-marker{display:none;}.promo-caret{transition:transform .18s ease;}details[open] .promo-caret{transform:rotate(180deg);}${scrollBehavior}nav::-webkit-scrollbar{display:none;}.promo-hero{display:block;font-size:0;}.promo-hero img{display:block;width:100%;height:auto;border:0;}@media (max-width:480px){.promo-hero{aspect-ratio:4/5;overflow:hidden;}.promo-hero img{height:100%;object-fit:cover;object-position:center;}}</style>
+<style>details>summary{list-style:none;}details>summary::-webkit-details-marker{display:none;}.promo-caret{transition:transform .18s ease;}details[open] .promo-caret{transform:rotate(180deg);}${scrollBehavior}nav::-webkit-scrollbar{display:none;}.promo-hero{width:100%;aspect-ratio:16/9;}@media (max-width:480px){.promo-hero{aspect-ratio:4/5;}}</style>
 ${body}
 </div>`;
 }

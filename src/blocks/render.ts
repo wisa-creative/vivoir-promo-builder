@@ -314,9 +314,17 @@ function renderGrid(d: GridData, ctx?: Ctx): string {
         ? `<a href="${esc(link)}" style="display:block;text-decoration:none;color:inherit;flex:0 0 calc(50% - 6px);max-width:calc(50% - 6px);">`
         : `<div style="flex:0 0 calc(50% - 6px);max-width:calc(50% - 6px);">`;
       const closeTag = link ? `</a>` : `</div>`;
+      // 제품명이 "후킹문구 · 제품명" 형태면 앞의 후킹문구를 별도 줄(파란 eyebrow)로 빼요.
+      // 구분자는 앞뒤 공백이 있는 " · "만 인식 → "손·목 함께"처럼 공백 없는 가운뎃점은 그대로 유지.
+      const nm = it.name ?? "";
+      const sepIdx = nm.indexOf(" · ");
+      const nameHtml =
+        sepIdx >= 0
+          ? `<span style="display:block;color:${C.accentBlue};font-size:12px;font-weight:700;margin-bottom:2px;">${esc(nm.slice(0, sepIdx))}</span>${esc(nm.slice(sepIdx + 3))}`
+          : esc(nm);
       return `${openTag}
         ${imageBox(it.imageUrl, "소모품 이미지", { ratio: "100%", ctx, dropField: "items", dropIndex: idx, dropSubfield: "imageUrl" })}
-        <div style="margin-top:10px;font-size:13px;font-weight:600;color:${inkOf(ctx)};line-height:1.4;">${esc(it.name)}</div>
+        <div style="margin-top:10px;font-size:13px;font-weight:600;color:${inkOf(ctx)};line-height:1.4;">${nameHtml}</div>
         <div style="margin-top:5px;">
           <span style="color:${C.orange};font-size:13px;font-weight:800;">${esc(it.percent)}</span>
           <span style="color:${C.muted};font-size:12px;text-decoration:line-through;margin-left:6px;">${esc(it.consumerPrice)}원</span>

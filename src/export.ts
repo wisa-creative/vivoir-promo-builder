@@ -60,3 +60,17 @@ export function downloadHtml(html: string, filename = "vivoir-promo.html") {
   a.click();
   URL.revokeObjectURL(url);
 }
+
+// 현재 블록 문서를 JSON 파일로 저장. { blocks: [...] } 형태라 '가져오기'로 그대로 다시 불러올 수 있어요.
+export function downloadDocJson(blocks: Block[], filename?: string) {
+  const stamp = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+  const name = filename ?? `vivoir-promo-${stamp}.json`;
+  const json = JSON.stringify({ blocks }, null, 2);
+  const blob = new Blob([json], { type: "application/json;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = name;
+  a.click();
+  URL.revokeObjectURL(url);
+}

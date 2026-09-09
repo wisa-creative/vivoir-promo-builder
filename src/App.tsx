@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useStore, persistDoc } from "./store";
 import { BLOCKS, blockOrder } from "./blocks/registry";
 import { renderPreviewDoc } from "./blocks/render";
-import { buildExportHtml, copyToClipboard, downloadHtml, exportImage } from "./export";
+import { buildExportHtml, copyToClipboard, downloadDocJson, downloadHtml, exportImage } from "./export";
 import { Inspector } from "./components/Inspector";
 import { TemplateModal } from "./components/TemplateModal";
 import { ImportModal } from "./components/ImportModal";
@@ -184,6 +184,11 @@ export function App() {
     }
   }
 
+  function onSaveJson() {
+    downloadDocJson(blocks);
+    flash(`${blocks.length}개 섹션을 JSON 파일로 저장했어요`);
+  }
+
   async function onExportImage() {
     setExporting(true);
     flash("이미지를 만들고 있어요…");
@@ -236,6 +241,9 @@ export function App() {
               <div className="more-menu">
                 <button onClick={() => { setTplOpen(true); setMoreOpen(false); }}>
                   템플릿 저장·불러오기
+                </button>
+                <button onClick={() => { onSaveJson(); setMoreOpen(false); }}>
+                  블록 JSON으로 저장
                 </button>
                 <button onClick={() => { setImportOpen(true); setMoreOpen(false); }}>
                   블록 JSON 가져오기

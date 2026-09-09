@@ -4,11 +4,30 @@ import { BLOCKS } from "../blocks/registry";
 import { cloneBlocks } from "../templates";
 import type { Block, BlockType } from "../types";
 
+// AI가 준 초안은 보통 코드펜스(```json)·앞뒤 설명·트레일링 콤마·스마트 따옴표가
+// 섞여 있어 그대로는 JSON.parse가 실패해요. 순수 JSON만 뽑아내 정리합니다.
+function coerceJsonText(input: string): string {
+  let t = input.trim();
+  // 스마트 따옴표 → 일반 따옴표
+  t = t.replace(/[“”]/g, '"').replace(/[‘’]/g, "'");
+  // ```json ... ``` 또는 ``` ... ``` 코드펜스 안쪽만 사용
+  const fence = t.match(/```(?:json)?\s*([\s\S]*?)```/i);
+  if (fence) t = fence[1].trim();
+  // 앞뒤 설명 문장 제거: 첫 여는 괄호부터 마지막 닫는 괄호까지만
+  const first = [t.indexOf("["), t.indexOf("{")].filter((i) => i >= 0);
+  const start = first.length ? Math.min(...first) : -1;
+  const end = Math.max(t.lastIndexOf("]"), t.lastIndexOf("}"));
+  if (start >= 0 && end > start) t = t.slice(start, end + 1);
+  // 트레일링 콤마 제거: , ] / , }
+  t = t.replace(/,(\s*[\]}])/g, "$1");
+  return t;
+}
+
 // 붙여넣은 JSON을 블록 배열로 파싱·검증. 배열이거나 {blocks:[...]} 형태 모두 허용.
 function parseBlocks(text: string): { blocks: Block[] } | { error: string } {
   let raw: unknown;
   try {
-    raw = JSON.parse(text);
+    raw = JSON.parse(coerceJsonText(text));
   } catch {
     return { error: "JSON 형식이 아니에요. 중괄호·따옴표가 빠지지 않았는지 확인해요." };
   }

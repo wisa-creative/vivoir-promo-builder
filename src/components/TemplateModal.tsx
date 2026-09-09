@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useStore } from "../store";
 import { BLOCKS } from "../blocks/registry";
+import { renderPreviewDoc } from "../blocks/render";
 import {
   cloneBlocks,
   deleteTemplate,
@@ -102,11 +103,27 @@ export function TemplateModal({ onClose, flash }: { onClose: () => void; flash: 
             )}
             {shown.map((t) => (
               <div className="tpl-item" key={t.id}>
-                <div className="tpl-meta">
-                  <span className={"tpl-kind " + t.kind}>
-                    {t.kind === "full" ? "프로모션" : "섹션"}
-                  </span>
-                  <span className="tpl-name">{t.name}</span>
+                <button
+                  className="tpl-thumb"
+                  title={t.kind === "full" ? "불러오기" : "추가"}
+                  onClick={() => onLoad(t)}
+                >
+                  <iframe
+                    className="tpl-thumb-frame"
+                    srcDoc={renderPreviewDoc(t.blocks)}
+                    tabIndex={-1}
+                    scrolling="no"
+                    aria-hidden="true"
+                    sandbox="allow-scripts"
+                  />
+                </button>
+                <div className="tpl-info">
+                  <div className="tpl-meta">
+                    <span className={"tpl-kind " + t.kind}>
+                      {t.kind === "full" ? "프로모션" : "섹션"}
+                    </span>
+                    <span className="tpl-name">{t.name}</span>
+                  </div>
                   <span className="tpl-sub">
                     {t.kind === "full"
                       ? `${t.blocks.length}개 섹션`

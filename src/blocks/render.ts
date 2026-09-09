@@ -144,12 +144,14 @@ const BLOCK_BOTTOM_PAD = 20;
 function padWithExtra(pad: string, extra: number): string {
   const p = pad.trim().split(/\s+/).map((x) => parseInt(x, 10) || 0);
   let t: number, r: number, l: number;
+  // 하단값이 명시되면(3·4 값) 그 값을 쓰고, 없으면(1·2 값) 전역 기본(BLOCK_BOTTOM_PAD)을 써요.
+  let b: number | null = null;
   if (p.length === 1) [t, r, l] = [p[0], p[0], p[0]];
   else if (p.length === 2) [t, r, l] = [p[0], p[1], p[1]];
-  else if (p.length === 3) [t, r, l] = [p[0], p[1], p[1]];
-  else [t, r, l] = [p[0], p[1], p[3]];
+  else if (p.length === 3) { [t, r, l, b] = [p[0], p[1], p[1], p[2]]; }
+  else { [t, r, l, b] = [p[0], p[1], p[3], p[2]]; }
   const top = Math.max(0, t + extra);
-  const bottom = Math.max(0, BLOCK_BOTTOM_PAD + extra);
+  const bottom = Math.max(0, (b ?? BLOCK_BOTTOM_PAD) + extra);
   return `${top}px ${r}px ${bottom}px ${l}px`;
 }
 
@@ -290,7 +292,8 @@ function renderHeader(d: HeaderData, ctx?: Ctx): string {
       <h2${ea(ctx, "title")} style="margin:0;font-size:26px;font-weight:500;color:${inkOf(ctx)};line-height:1.3;white-space:pre-line;">${esc(d.title)}</h2>
       <p${ea(ctx, "subtitle")} style="margin:12px 0 0;font-size:14px;line-height:1.6;color:${subOf(ctx)};white-space:pre-line;">${esc(d.subtitle)}</p>
     </div>`;
-  return section(inner, C.page, "60px 22px", ctx?.id, ctx);
+  // 상단 여백은 넉넉히(도입부 호흡), 하단은 좁혀 바로 아래 상품 섹션과 붙게 해요.
+  return section(inner, C.page, "88px 22px 8px", ctx?.id, ctx);
 }
 
 function renderProduct(d: ProductData, ctx?: Ctx): string {

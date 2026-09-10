@@ -247,11 +247,16 @@ function renderNav(d: NavData, ctx?: Ctx): string {
 }
 
 // Cafe24 쿠폰 다운로드 링크를 눌러도 메인으로 넘어가지 않고 현재 프로모션 페이지에 그대로 머물게 해요.
-// 숨은 iframe에 다운로드 URL을 실어 발급만 처리하고(카페24의 발급 완료 알림은 그대로 뜸) 페이지 이동은 막아요.
+// 숨은 iframe에 다운로드 URL을 실어 발급만 처리하고(카페24의 발급 완료 알림은 그대로 뜸) 발급 후 메인 이동은 막아요.
+// 단, 비로그인 등으로 iframe이 '로그인 페이지'로 이동하려 하면 그건 감지해서 본 창을 로그인 페이지로 넘겨줘요.
 const COUPON_STAY_ONCLICK =
   "var h=this.getAttribute('href');if(!h||h==='#')return false;" +
   "var f=document.getElementById('vivoir-coupon-frame');" +
-  "if(!f){f=document.createElement('iframe');f.id='vivoir-coupon-frame';f.style.cssText='position:absolute;width:0;height:0;border:0;left:-9999px;';document.body.appendChild(f);}" +
+  "if(!f){f=document.createElement('iframe');f.id='vivoir-coupon-frame';" +
+  "f.style.cssText='position:absolute;width:0;height:0;border:0;left:-9999px;';" +
+  "f.onload=function(){try{var u=f.contentWindow.location.href;" +
+  "if(u.indexOf('login')>-1||u.indexOf('member')>-1){window.location.href=u;}}catch(e){}};" +
+  "document.body.appendChild(f);}" +
   "f.src=h;return false;";
 
 // 쿠폰팩 '한 번에 다운받기' 버튼. 색을 지정하면 채움 버튼, 비우면 흰 배경 외곽선 기본.

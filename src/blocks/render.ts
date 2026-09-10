@@ -246,6 +246,14 @@ function renderNav(d: NavData, ctx?: Ctx): string {
   return `<nav${anchor} style="background:${navBg};border-bottom:1px solid ${C.line};position:sticky;top:0;z-index:50;width:100vw;margin-left:calc(50% - 50vw);"><div class="promo-nav" style="display:flex;margin:0 auto;">${items}</div></nav>`;
 }
 
+// Cafe24 쿠폰 다운로드 링크를 눌러도 메인으로 넘어가지 않고 현재 프로모션 페이지에 그대로 머물게 해요.
+// 숨은 iframe에 다운로드 URL을 실어 발급만 처리하고(카페24의 발급 완료 알림은 그대로 뜸) 페이지 이동은 막아요.
+const COUPON_STAY_ONCLICK =
+  "var h=this.getAttribute('href');if(!h||h==='#')return false;" +
+  "var f=document.getElementById('vivoir-coupon-frame');" +
+  "if(!f){f=document.createElement('iframe');f.id='vivoir-coupon-frame';f.style.cssText='position:absolute;width:0;height:0;border:0;left:-9999px;';document.body.appendChild(f);}" +
+  "f.src=h;return false;";
+
 // 쿠폰팩 '한 번에 다운받기' 버튼. 색을 지정하면 채움 버튼, 비우면 흰 배경 외곽선 기본.
 function downloadButton(d: CouponData, ctx?: Ctx): string {
   const bgSet = (d.downloadBg ?? "").trim();
@@ -254,7 +262,7 @@ function downloadButton(d: CouponData, ctx?: Ctx): string {
   const fg = fgSet || inkOf(ctx);
   const border = bgSet || C.cta; // 배경색을 지정하면 테두리도 같은 색(채움), 아니면 기본 외곽선
   return `<div style="margin-top:22px;">
-    <a href="${esc(d.downloadLink || "#")}" style="display:block;width:100%;box-sizing:border-box;text-align:center;background:${bg};color:${fg};border:1.5px solid ${border};font-size:16px;font-weight:700;text-decoration:none;padding:16px 0;border-radius:8px;"><span${ea(ctx, "downloadText")}>${esc(d.downloadText)}</span></a>
+    <a href="${esc(d.downloadLink || "#")}" onclick="${COUPON_STAY_ONCLICK}" style="display:block;width:100%;box-sizing:border-box;text-align:center;background:${bg};color:${fg};border:1.5px solid ${border};font-size:16px;font-weight:700;text-decoration:none;padding:16px 0;border-radius:8px;"><span${ea(ctx, "downloadText")}>${esc(d.downloadText)}</span></a>
   </div>`;
 }
 
@@ -266,7 +274,7 @@ function renderCoupon(d: CouponData, ctx?: Ctx): string {
       const btnLabel = esc(`↓ ${cp.buttonText?.trim() || "쿠폰받기"}`);
       // 개별 다운로드 링크가 있으면 받기 버튼을 그 링크로 연결해요 (미리보기에선 이동 안 함, 내보낸 HTML에서 이동)
       const getBtn = link
-        ? `<a href="${esc(link)}" style="font-size:13px;color:${inkOf(ctx)};white-space:nowrap;margin-left:12px;text-decoration:none;font-weight:600;">${btnLabel}</a>`
+        ? `<a href="${esc(link)}" onclick="${COUPON_STAY_ONCLICK}" style="font-size:13px;color:${inkOf(ctx)};white-space:nowrap;margin-left:12px;text-decoration:none;font-weight:600;">${btnLabel}</a>`
         : `<div style="font-size:13px;color:${inkOf(ctx)};white-space:nowrap;margin-left:12px;">${btnLabel}</div>`;
       return `<div style="border:1px solid ${C.line};border-radius:12px;background:${cardBg};padding:17px 18px;display:flex;justify-content:space-between;align-items:center;">
         <div style="min-width:0;">

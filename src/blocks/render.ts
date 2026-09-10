@@ -247,17 +247,16 @@ function renderNav(d: NavData, ctx?: Ctx): string {
 }
 
 // Cafe24 쿠폰 다운로드 링크를 눌러도 메인으로 넘어가지 않고 현재 프로모션 페이지에 그대로 머물게 해요.
-// 숨은 iframe에 다운로드 URL을 실어 발급만 처리하고(카페24의 발급 완료 알림은 그대로 뜸) 발급 후 메인 이동은 막아요.
-// 단, 비로그인 등으로 iframe이 '로그인 페이지'로 이동하려 하면 그건 감지해서 본 창을 로그인 페이지로 넘겨줘요.
-const COUPON_STAY_ONCLICK =
-  "var h=this.getAttribute('href');if(!h||h==='#')return false;" +
-  "var f=document.getElementById('vivoir-coupon-frame');" +
-  "if(!f){f=document.createElement('iframe');f.id='vivoir-coupon-frame';" +
-  "f.style.cssText='position:absolute;width:0;height:0;border:0;left:-9999px;';" +
-  "f.onload=function(){try{var u=f.contentWindow.location.href;" +
-  "if(u.indexOf('login')>-1||u.indexOf('member')>-1){window.location.href=u;}}catch(e){}};" +
-  "document.body.appendChild(f);}" +
-  "f.src=h;return false;";
+// 방법: 링크의 target을 화면에 안 보이는 iframe(VIVOIR_COUPON_FRAME)으로 지정 → 클릭해도 본 페이지는 그대로,
+// iframe 안에서만 발급이 처리돼요(카페24 발급 알림은 그대로 뜸). 인라인 onclick은 카페24 편집기가 지우는 경우가
+// 많아 target 속성만 사용해요(target은 유지됨). 비로그인 시 로그인 이동은 아래 페이지 레벨 스크립트가 처리해요.
+const VIVOIR_COUPON_FRAME = "vivoir-coupon-frame";
+const COUPON_TARGET_ATTR = ` target="${VIVOIR_COUPON_FRAME}"`;
+
+// 숨은 iframe + 로그인 리다이렉트 감지 스크립트. 발급 후 메인 이동은 iframe 안에 가두고,
+// 비로그인 등으로 iframe이 '로그인/회원' 페이지로 이동하면 그때만 본 창을 그 주소로 넘겨줘요.
+const couponFrameHtml = `<iframe name="${VIVOIR_COUPON_FRAME}" title="coupon" style="position:absolute;width:0;height:0;border:0;left:-9999px;" aria-hidden="true"></iframe>
+<script>(function(){var f=window.frames['${VIVOIR_COUPON_FRAME}'];var el=document.getElementsByName('${VIVOIR_COUPON_FRAME}')[0];if(!el)return;el.addEventListener('load',function(){try{var u=el.contentWindow.location.href;if(u&&u!=='about:blank'&&(u.indexOf('login')>-1||u.indexOf('member')>-1)){window.top.location.href=u;}}catch(e){}});})();</script>`;
 
 // 쿠폰팩 '한 번에 다운받기' 버튼. 색을 지정하면 채움 버튼, 비우면 흰 배경 외곽선 기본.
 function downloadButton(d: CouponData, ctx?: Ctx): string {
@@ -267,7 +266,7 @@ function downloadButton(d: CouponData, ctx?: Ctx): string {
   const fg = fgSet || inkOf(ctx);
   const border = bgSet || C.cta; // 배경색을 지정하면 테두리도 같은 색(채움), 아니면 기본 외곽선
   return `<div style="margin-top:22px;">
-    <a href="${esc(d.downloadLink || "#")}" onclick="${COUPON_STAY_ONCLICK}" style="display:block;width:100%;box-sizing:border-box;text-align:center;background:${bg};color:${fg};border:1.5px solid ${border};font-size:16px;font-weight:700;text-decoration:none;padding:16px 0;border-radius:8px;"><span${ea(ctx, "downloadText")}>${esc(d.downloadText)}</span></a>
+    <a href="${esc(d.downloadLink || "#")}"${COUPON_TARGET_ATTR} style="display:block;width:100%;box-sizing:border-box;text-align:center;background:${bg};color:${fg};border:1.5px solid ${border};font-size:16px;font-weight:700;text-decoration:none;padding:16px 0;border-radius:8px;"><span${ea(ctx, "downloadText")}>${esc(d.downloadText)}</span></a>
   </div>`;
 }
 
@@ -279,7 +278,7 @@ function renderCoupon(d: CouponData, ctx?: Ctx): string {
       const btnLabel = esc(`↓ ${cp.buttonText?.trim() || "쿠폰받기"}`);
       // 개별 다운로드 링크가 있으면 받기 버튼을 그 링크로 연결해요 (미리보기에선 이동 안 함, 내보낸 HTML에서 이동)
       const getBtn = link
-        ? `<a href="${esc(link)}" onclick="${COUPON_STAY_ONCLICK}" style="font-size:13px;color:${inkOf(ctx)};white-space:nowrap;margin-left:12px;text-decoration:none;font-weight:600;">${btnLabel}</a>`
+        ? `<a href="${esc(link)}"${COUPON_TARGET_ATTR} style="font-size:13px;color:${inkOf(ctx)};white-space:nowrap;margin-left:12px;text-decoration:none;font-weight:600;">${btnLabel}</a>`
         : `<div style="font-size:13px;color:${inkOf(ctx)};white-space:nowrap;margin-left:12px;">${btnLabel}</div>`;
       return `<div style="border:1px solid ${C.line};border-radius:12px;background:${cardBg};padding:17px 18px;display:flex;justify-content:space-between;align-items:center;">
         <div style="min-width:0;">
@@ -449,11 +448,15 @@ export function renderPageBody(blocks: Block[], opts?: { edit?: boolean }): stri
   const scrollBehavior = opts?.edit ? "" : "html{scroll-behavior:smooth;}";
   // 스크롤스파이: 지금 보고 있는 섹션의 탭을 활성(색+밑줄)으로 표시하고, 모바일에선 그 탭이
   // 보이도록 가로 내비를 살짝 스크롤해요. (>·줄바꿈을 피해 한 줄로 — export의 공백 압축과 충돌 방지)
+  // 쿠폰 블록이 있으면 숨은 iframe(+로그인 이동 감지)을 페이지에 한 번 넣어요. 쿠폰 링크가 이 iframe을 target으로 써요.
+  const hasCoupon = blocks.some((b) => b.enabled !== false && b.type === "coupon");
+  const couponFrame = hasCoupon ? couponFrameHtml : "";
   const navSpyScript = `<script>(function(){var links=[].slice.call(document.querySelectorAll('.promo-nav-link'));if(!links.length)return;var pairs=[];links.forEach(function(a){var h=a.getAttribute('href');if(!h||h.charAt(0)!=='#'||h.length<2)return;var sec=document.getElementById(h.slice(1));if(sec)pairs.push({a:a,sec:sec});});if(!pairs.length)return;var last=null,ticking=false;function update(){ticking=false;var cur=pairs[0].a;for(var i=0;i<pairs.length;i++){if(pairs[i].sec.getBoundingClientRect().top<=80)cur=pairs[i].a;}if(cur===last)return;last=cur;links.forEach(function(l){l.classList.toggle('active',l===cur);});var box=cur.parentNode;if(box&&box.scrollWidth-box.clientWidth>1){box.scrollTo({left:cur.offsetLeft-(box.clientWidth-cur.offsetWidth)/2,behavior:'smooth'});}}function onScroll(){if(!ticking){ticking=true;requestAnimationFrame(update);}}window.addEventListener('scroll',onScroll,{passive:true});window.addEventListener('resize',onScroll,{passive:true});update();})();</script>`;
   // 바깥 래퍼는 폭 제한 없이 전체 폭 — 각 섹션이 스스로 배경을 좌우 끝까지 깔고, 콘텐츠만 가운데 정렬해요.
   return `<div style="font-family:${tokens.font.family};background:${C.white};color:${C.ink};">
 <style>details>summary{list-style:none;}details>summary::-webkit-details-marker{display:none;}.promo-caret{transition:transform .18s ease;}details[open] .promo-caret{transform:rotate(180deg);}${scrollBehavior}nav::-webkit-scrollbar{display:none;}.promo-hero{width:100%;height:480px;}@media (max-width:480px){.promo-hero{height:auto;aspect-ratio:4/5;}}.promo-nav{flex-wrap:nowrap;overflow-x:auto;justify-content:flex-start;max-width:${tokens.layout.maxWidth}px;-webkit-overflow-scrolling:touch;scrollbar-width:none;-ms-overflow-style:none;}.promo-nav::-webkit-scrollbar{display:none;}@media (min-width:481px){.promo-nav{overflow-x:visible;justify-content:center;max-width:none;}}.promo-nav-link{display:block;flex:0 0 auto;text-align:center;white-space:nowrap;padding:15px 12px;font-size:14px;font-weight:600;text-decoration:none;color:${C.inkSub};border-bottom:2px solid transparent;letter-spacing:-0.02em;transition:color .15s ease,border-color .15s ease;}.promo-nav-link.active{color:${C.ink};font-weight:700;border-bottom-color:${C.ink};}</style>
 ${body}
+${couponFrame}
 ${navSpyScript}
 </div>`;
 }
